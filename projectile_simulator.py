@@ -95,7 +95,7 @@ class Ball():
         else:
             newx = ((b.ball_r.x)+distancex)
         l.x.append(newx)
-        l.x = (b.ball_r.y-distancey)
+        newy = (b.ball_r.y-distancey)
         l.y.append(l.height-self.newy)
         ball_r2 = pygame.Rect(newx,self.newy,10,10)
         l.window.fill(g.white)
