@@ -1,7 +1,7 @@
 import pygame
 import pygame_gui
 import projectile_simulator
-import teach
+#import teach
 from sys import exit
 
 pygame.init()
@@ -10,8 +10,8 @@ window_surface = pygame.display.set_mode((800, 600))
 background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
-font = pygame.font.Font(None, 40)
-font2 = pygame.font.Font(None, 20)
+font = pygame.font.SysFont("Comic Sans MS", 40)
+font2 = pygame.font.SysFont("Comic Sans MS", 20)
 manager = pygame_gui.UIManager((800, 600))
 
 class Buttons: # rename
@@ -22,15 +22,17 @@ class Buttons: # rename
         self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 50)),text='Load',manager=manager)
         self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Settings',manager=manager)
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 425), (250, 50)),text='Quit',manager=manager)
+        self.finished = False
 
     def checkpressed(self,button):
         if button == self.gcse:
-            teach.menu(True)
-        if button == self.alevel:
-            teach.menu(False)
-        if button == self.sandbox:
-            projectile_simulator.Start.mainloop()
             pass
+            #teach.menu(True)
+        if button == self.alevel:
+            pass
+            #teach.menu(False)
+        if button == self.sandbox:
+            self.finished = projectile_simulator.Start.mainloop()
         if button == self.load:
             print("load")
         if button == self.settings:
@@ -51,8 +53,13 @@ while is_running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             b.checkpressed(event.ui_element)
         manager.process_events(event)
+    if b.finished == True:
+        pygame.init()
+        b.finished = False
     manager.update(time_delta)
     window_surface.blit(background, (0, 0))
     manager.draw_ui(window_surface)
     window_surface.blit(font.render("Projectile Motion Simulator", True, black, None),(150,75))
     pygame.display.update()
+
+pygame.quit()

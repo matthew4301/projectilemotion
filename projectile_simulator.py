@@ -3,6 +3,8 @@ import math
 import time as t
 import matplotlib.pyplot as plt
 
+# using pygame gui will break the whole thing??????????
+
 width = 800
 height = 600
 window = pygame.display.set_mode((width,height))
@@ -16,10 +18,8 @@ y = []
 ground = pygame.Rect(5,height-100,width,100)
 
 class Start():
-    def __init__():
+    def mainloop():
         pygame.init()
-
-    def mainloop(self):
         run = True
         back = False
         first = True
@@ -44,7 +44,7 @@ class Start():
             angle,back = c.angle(back,lenx,leny)
             if first == True:
                 vvelocity,hvelocity = c.velocity(c.gravity,vdistance,hdistance,angle)
-            g.text(vvelocity,hvelocity,mousex,mousey,angle,duration)
+            g.text(vvelocity,hvelocity,angle,duration)
             keys = pygame.key.get_pressed()
             if keys[pygame.K_a]:
                 first,duration,ball_r2.x,ball_r2.y = b.reset()
@@ -57,7 +57,7 @@ class Start():
                 first,duration,ball_r2 = b.collision(first,duration,ball_r2)
             pygame.display.update()
             clock.tick(fps)
-        pygame.quit()
+        return True
 
 class Ball():
     def __init__(self) -> None:
@@ -99,7 +99,7 @@ class Ball():
         ball_r2 = pygame.Rect(newx,newy,10,10)
         window.fill(g.white)
         g.draw(ball_r2)
-        g.text(vvelocity,hvelocity,mousex,mousey,angle,duration)
+        g.text(vvelocity,hvelocity,angle,duration)
         pygame.display.flip()
         clock.tick(fps)
         t.sleep(0.01)
@@ -159,7 +159,6 @@ class Calculations():
 
 class Graphics():
     def __init__(self) -> None:
-        self.fnt = pygame.font.SysFont("Arial", 30, False)
         self.bounds = pygame.Rect(0,0,width,height)
         self.white = (255,255,255)
         self.green = (0,100,0)
@@ -182,14 +181,14 @@ class Graphics():
         if ball_r2.x < 0:
             ball_r2.x = 10
         return ball_r2
-
-    def text(self,vvelocity,hvelocity,mousex,mousey,angle,duration):
-        window.blit(self.fnt.render(f"Vertical Velocity: {round(vvelocity/50,2)}m/s", True, self.black, None), (2,40))
-        window.blit(self.fnt.render(f"Horizonal Velocity: {round(hvelocity/50,2)}m/s", True, self.black, None), (2,80))
-        window.blit(self.fnt.render(f"Angle: {angle}°", True, self.black, None),(2,0))
-        window.blit(self.fnt.render(f"Time: {round(duration,2)}s", True, self.black, None),(2,120))
-        window.blit(self.fnt.render("1m", True, self.black, None),((100),b.ball_r.y+10))
-        window.blit(self.fnt.render(f"x: {mousex} y: {mousey}", True, self.black, None),(2,160))
+    
+    def text(self,vvelocity,hvelocity,angle,duration):
+        textfont = pygame.font.Font(None,40)
+        window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(vvelocity/50,2)}m/s", True, self.black, None), (2,40))
+        window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(hvelocity/50,2)}m/s", True, self.black, None), (2,80))
+        window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (2,0))
+        window.blit(pygame.font.Font.render(textfont, f"Time: {round(duration,2)}s", True, self.black, None), (2,120))
+        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (100,b.ball_r.y+10))
 
 c = Calculations()
 b = Ball()
