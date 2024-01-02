@@ -1,10 +1,12 @@
 import pygame
+import pygame.freetype
 import pygame_gui
 import projectile_simulator
-#import teach
+import teach
 from sys import exit
 
 pygame.init()
+pygame.freetype.init()
 pygame.display.set_caption('Projectile Motion Simulator')
 window_surface = pygame.display.set_mode((800, 600))
 background = pygame.Surface((800, 600))
@@ -27,10 +29,10 @@ class Buttons: # rename
     def checkpressed(self,button):
         if button == self.gcse:
             pass
-            #teach.menu(True)
+            teach.menu(True)
         if button == self.alevel:
             pass
-            #teach.menu(False)
+            teach.menu(False)
         if button == self.sandbox:
             self.finished = projectile_simulator.Start.mainloop()
         if button == self.load:
