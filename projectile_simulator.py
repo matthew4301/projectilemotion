@@ -32,8 +32,7 @@ class Buttons():
         if button == self.settings:
             print("settings")
         if button == self.quit:
-            pygame.quit()
-            exit()
+            return False
 
 b = Buttons()
 
@@ -53,6 +52,8 @@ class Start():
                 if event.type == pygame.QUIT:
                     c.graphs(x,y)
                     run = False
+                if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                    run = b.checkpressed(event.ui_element)
             mousex,mousey = b.controls(mousex,mousey)
             leny = (height-((mousey+b.ball_r.y)-380))/10
             if back == True:

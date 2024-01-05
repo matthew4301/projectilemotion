@@ -3,6 +3,8 @@ import pygame.freetype
 import pygame_gui
 import projectile_simulator
 import teach
+import settings
+import load
 from sys import exit
 
 pygame.init()
@@ -29,17 +31,15 @@ class Buttons():
 
     def checkpressed(self,button):
         if button == self.gcse:
-            pass
-            teach.menu(True)
+            self.teachfinished = teach.menu(True)
         if button == self.alevel:
-            pass
-            teach.menu(False)
+            self.teachfinished = teach.menu(False)
         if button == self.sandbox:
             self.finished = projectile_simulator.Start.mainloop()
         if button == self.load:
-            print("load")
+            self.loadfinished = load.menu()
         if button == self.settings:
-            print("settings")
+            self.settingsfinished = settings.menu()
         if button == self.quit:
             pygame.quit()
             exit()
