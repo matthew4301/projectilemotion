@@ -1,14 +1,16 @@
 import pygame
+import pygame.freetype
+import pygame_gui
 import math
 import time as t
 import matplotlib.pyplot as plt
 
-# using pygame gui will break the whole thing??????????
-
+pygame.freetype.init()
 width = 800
 height = 600
 window = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Projectile Motion")
+manager = pygame_gui.UIManager((800, 600))
 clock = pygame.time.Clock()
 fps = 60
 velocities = []
@@ -16,6 +18,24 @@ time = []
 x = []
 y = []
 ground = pygame.Rect(5,height-100,width,100)
+
+class Buttons():
+    def __init__(self) -> None:
+        self.launch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 10), (100, 50)),text='Launch',manager=manager)
+        self.reset = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 70), (100, 50)),text='Reset',manager=manager)
+        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 130), (100, 50)),text='Settings',manager=manager)
+        self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 190), (100, 50)),text='Main Menu',manager=manager)
+
+    def checkpressed(self,button):
+        if button == self.launch:
+            print("load")
+        if button == self.settings:
+            print("settings")
+        if button == self.quit:
+            pygame.quit()
+            exit()
+
+b = Buttons()
 
 class Start():
     def mainloop():
@@ -28,6 +48,7 @@ class Start():
         mousey = height/2
         ball_r2 = pygame.Rect(5,ground.y-10,10,10)
         while run:
+            time_delta = clock.tick(60)/1000.0
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     c.graphs(x,y)
@@ -55,6 +76,8 @@ class Start():
                         ball_r2 = g.bounds(ball_r2)
             if pygame.Rect.contains(ground,ball_r2):
                 first,duration,ball_r2 = b.collision(first,duration,ball_r2)
+            manager.update(time_delta)
+            manager.draw_ui(window)
             pygame.display.update()
             clock.tick(fps)
         return True
@@ -192,5 +215,4 @@ class Graphics():
 
 c = Calculations()
 b = Ball()
-pygame.font.init()
 g = Graphics()

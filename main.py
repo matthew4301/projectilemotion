@@ -16,7 +16,7 @@ font = pygame.font.SysFont("Comic Sans MS", 40)
 font2 = pygame.font.SysFont("Comic Sans MS", 20)
 manager = pygame_gui.UIManager((800, 600))
 
-class Buttons: # rename
+class Buttons():
     def __init__(self):
         self.gcse = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 175), (250, 50)),text='Start As GCSE',manager=manager)
         self.alevel = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 225), (250, 50)),text='Start As A-Level',manager=manager)
@@ -25,6 +25,7 @@ class Buttons: # rename
         self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Settings',manager=manager)
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 425), (250, 50)),text='Quit',manager=manager)
         self.finished = False
+        self.teachfinished = False
 
     def checkpressed(self,button):
         if button == self.gcse:
@@ -58,6 +59,9 @@ while is_running:
     if b.finished == True:
         pygame.init()
         b.finished = False
+    if b.teachfinished == True:
+        pygame.init()
+        b.teachfinished = False
     manager.update(time_delta)
     window_surface.blit(background, (0, 0))
     manager.draw_ui(window_surface)
