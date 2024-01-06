@@ -22,66 +22,68 @@ ground = pygame.Rect(5,height-100,width,100)
 class Buttons():
     def __init__(self) -> None:
         self.launch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 10), (100, 50)),text='Launch',manager=manager)
-        self.reset = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 70), (100, 50)),text='Reset',manager=manager)
-        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 130), (100, 50)),text='Settings',manager=manager)
-        self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 190), (100, 50)),text='Main Menu',manager=manager)
+        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 70), (100, 50)),text='Reset',manager=manager)
+        self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 130), (100, 50)),text='Main Menu',manager=manager)
+        self.reset_var = False
+        self.launch_var = False
 
     def checkpressed(self,button):
         if button == self.launch:
-            print("load")
-        if button == self.settings:
-            print("settings")
+            self.launch_var = True
+        if button == self.reset_button:
+            self.reset_var = True
         if button == self.quit:
             return False
 
-b = Buttons()
+bt = Buttons()
 
-class Start():
-    def mainloop():
-        pygame.init()
-        run = True
-        back = False
-        first = True
-        duration = 0
-        mousex = width/2
-        mousey = height/2
-        ball_r2 = pygame.Rect(5,ground.y-10,10,10)
-        while run:
-            time_delta = clock.tick(60)/1000.0
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    c.graphs(x,y)
-                    run = False
-                if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                    run = b.checkpressed(event.ui_element)
-            mousex,mousey = b.controls(mousex,mousey)
-            leny = (height-((mousey+b.ball_r.y)-380))/10
-            if back == True:
-                lenx = (mousex+(b.ball_r.x+10))/10
-            else:
-                lenx = (mousex-(b.ball_r.x+10))/10
-            g.draw(ball_r2)
-            pygame.draw.line(window,g.red,pygame.math.Vector2(ball_r2.x+10,ball_r2.y),pygame.math.Vector2(mousex,mousey),5)
-            hdistance,vdistance = c.distance(lenx,leny)
-            angle,back = c.angle(back,lenx,leny)
-            if first == True:
-                vvelocity,hvelocity = c.velocity(c.gravity,vdistance,hdistance,angle)
-            g.text(vvelocity,hvelocity,angle,duration)
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_a]:
-                first,duration,ball_r2.x,ball_r2.y = b.reset()
-            if keys[pygame.K_SPACE]:
-                while pygame.Rect.contains(ground,ball_r2) == False:
-                    duration,ball_r2,back = b.movement(ball_r2,hvelocity,vvelocity,duration,first,back,mousex,mousey,angle)
-                    if pygame.Rect.contains(g.bounds,ball_r2) == False:
-                        ball_r2 = g.bounds(ball_r2)
-            if pygame.Rect.contains(ground,ball_r2):
-                first,duration,ball_r2 = b.collision(first,duration,ball_r2)
-            manager.update(time_delta)
-            manager.draw_ui(window)
-            pygame.display.update()
-            clock.tick(fps)
-        return True
+def mainloop():
+    pygame.init()
+    run = True
+    back = False
+    first = True
+    duration = 0
+    mousex = width/2
+    mousey = height/2
+    ball_r2 = pygame.Rect(5,ground.y-10,10,10)
+    while run:
+        time_delta = clock.tick(60)/1000.0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                c.graphs(x,y)
+                run = False
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                run = b.checkpressed(event.ui_element)
+        mousex,mousey = b.controls(mousex,mousey)
+        leny = (height-((mousey+b.ball_r.y)-380))/10
+        if back == True:
+            lenx = (mousex+(b.ball_r.x+10))/10
+        else:
+            lenx = (mousex-(b.ball_r.x+10))/10
+        g.draw(ball_r2)
+        pygame.draw.line(window,g.red,pygame.math.Vector2(ball_r2.x+10,ball_r2.y),pygame.math.Vector2(mousex,mousey),5)
+        hdistance,vdistance = c.distance(lenx,leny)
+        angle,back = c.angle(back,lenx,leny)
+        if first == True:
+            vvelocity,hvelocity = c.velocity(c.gravity,vdistance,hdistance,angle)
+        g.text(vvelocity,hvelocity,angle,duration)
+        keys = pygame.key.get_pressed()
+        if bt.reset_var == True:
+            bt.reset_var = False
+            first,duration,ball_r2.x,ball_r2.y = b.reset()
+        if bt.launch_var == True:
+            bt.launch_var = False
+            while pygame.Rect.contains(ground,ball_r2) == False:
+                duration,ball_r2,back = b.movement(ball_r2,hvelocity,vvelocity,duration,first,back,mousex,mousey,angle)
+                if pygame.Rect.contains(g.bounds,ball_r2) == False:
+                    ball_r2 = g.bounds(ball_r2)
+        if pygame.Rect.contains(ground,ball_r2):
+            first,duration,ball_r2 = b.collision(first,duration,ball_r2)
+        manager.update(time_delta)
+        manager.draw_ui(window)
+        pygame.display.update()
+        clock.tick(fps)
+    return True
 
 class Ball():
     def __init__(self) -> None:

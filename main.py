@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 import pygame_gui
 import projectile_simulator
 import teach
@@ -35,7 +34,7 @@ class Buttons():
         if button == self.alevel:
             self.teachfinished = teach.menu(False)
         if button == self.sandbox:
-            self.finished = projectile_simulator.Start.mainloop()
+            self.finished = projectile_simulator.mainloop()
         if button == self.load:
             self.loadfinished = load.menu()
         if button == self.settings:

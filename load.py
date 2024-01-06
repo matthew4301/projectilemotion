@@ -1,5 +1,4 @@
 import pygame
-import pygame.freetype
 import pygame_gui
 
 pygame.freetype.init()
@@ -14,6 +13,7 @@ class Buttons():
         self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Main Menu',manager=manager)
 
     def checkpressed(self,button):
+
         if button == self.mainmenu:
             return False
 
