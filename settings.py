@@ -47,7 +47,7 @@ class Buttons:
         self.rocket = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 425), (150, 50)),text='Rocket',manager=manager)
         self.gravity = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 225), (250, 50)),text='Set to Gravity (9.81)',manager=manager)
         self.acceleration_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((475, 175), (250,25)), start_value=9.81, value_range=(1,20),manager=manager)
-        self.scale_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((475, 375), (250,25)), start_value=50, value_range=(1,100),manager=manager)
+        self.scale_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((475, 375), (250,25)), start_value=50, value_range=(10,500),manager=manager)
         self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((270, 500), (250, 50)),text='Main Menu',manager=manager)
 
     def checkpressed(self,button):

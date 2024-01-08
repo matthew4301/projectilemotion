@@ -26,26 +26,26 @@ class Ball:
     def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            mouse_x-=5
+            mouse_x-=1
         if keys[pygame.K_RIGHT]:
-            mouse_x+=5
+            mouse_x+=1
         if keys[pygame.K_UP]:
-            mouse_y-=5
+            mouse_y-=1
         if keys[pygame.K_DOWN]:
-            mouse_y+=5
+            mouse_y+=1
         return mouse_x,mouse_y
     
 class Calculations:
     def __init__(self) -> None:
         pass
 
-    def velocity(self,v_distance,h_distance): # wrong way round?
+    def velocity(self,v_distance,h_distance):
         try:
-            v_velocity = round(math.sqrt(2*acceleration*v_distance),2)
+            v_velocity = round(math.sqrt(2*float(acceleration)*v_distance),2)
         except ValueError:
             v_velocity = 0
         try:
-            h_velocity = round(math.sqrt(2*acceleration*h_distance),2)
+            h_velocity = round(math.sqrt(2*float(acceleration)*h_distance),2)
         except ValueError:
             h_velocity = 0
         return v_velocity,h_velocity
@@ -83,12 +83,13 @@ class Graphics:
         pygame.draw.rect(window,self.black,b.ball)
         pygame.draw.line(window,g.red,pygame.math.Vector2(b.ball.x+10,b.ball.y),pygame.math.Vector2(mouse_x,mouse_y),5)
 
-    def text(self,v_velocity,h_velocity,angle):
-        textfont = pygame.font.Font(None,40)
+    def text(self,v_velocity,h_velocity,angle,len_x,len_y):
+        textfont = pygame.font.Font(None,30)
         window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(v_velocity/50,2)}m/s", True, self.black, None), (2,40))
         window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(h_velocity/50,2)}m/s", True, self.black, None), (2,80))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {round(angle,0)}°", True, self.black, None), (2,0))
-        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+scale,b.ball.y+10))
+        window.blit(pygame.font.Font.render(textfont, f"{len_x}, {len_y}", True, self.black, None), (2,120))
+        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+int(scale),b.ball.y+10))
 
     def button_checkpressed(self,button):
         if button == self.launch:
@@ -121,15 +122,15 @@ class Loop:
         self.back = False
 
     def calculations(self,mouse_x,mouse_y):
-        len_y = mouse_y-b.ball.y
+        len_y = b.ball.y-mouse_y
         len_x = mouse_x-(b.ball.x+10)
         g.draw(mouse_x,mouse_y)
-        v_distance, h_distance = c.distance(len_x,len_y)
+        v_distance, h_distance = c.distance(len_y,len_x)
         angle, self.back = c.angle(self.back,len_x,len_y)
         v_velocity, h_velocity = c.velocity(v_distance,h_distance)
         return len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity
 
-    def mainloop(self):
+    def mainloop(self): # 500 px = 6.26m/s, 2m/s = 51px, 3m/s = 115 px, 4m/s = 204px
         run = True
         mouse_x = width/2
         mouse_y = height/2
@@ -143,7 +144,7 @@ class Loop:
                     button_pressed = g.button_checkpressed(event.ui_element)
             mouse_x,mouse_y = b.controls(mouse_x,mouse_y)
             len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity = self.calculations(mouse_x,mouse_y)
-            g.text(v_velocity,h_velocity,angle)
+            g.text(v_velocity,h_velocity,angle,len_x,len_y)
             manager.update(time_delta)
             manager.draw_ui(window)
             pygame.display.update()
@@ -157,5 +158,6 @@ g = Graphics()
 c = Calculations()
 l = Loop()
 
-
+units_type,units,object,acceleration,scale = load_settings()
+print(units_type,units,object,acceleration,scale)
 l.mainloop()
