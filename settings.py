@@ -25,7 +25,6 @@ class Save:
         try:
             with open("saves/settings.txt") as f:
                 settings_list = f.read().splitlines()
-            print(settings_list)
             self.units_type = settings_list[0]
             self.units = settings_list[1]
             self.object = settings_list[2]
@@ -52,8 +51,6 @@ class Buttons:
         self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((270, 500), (250, 50)),text='Main Menu',manager=manager)
 
     def checkpressed(self,button):
-        if button == self.mainmenu:
-            return False
         if button == self.metric:
             s.units_type = "Metric"
         if button == self.imperial:
@@ -77,6 +74,10 @@ class Buttons:
         if button == self.gravity:
             s.acceleration = 9.81
         s.save()
+        if button == self.mainmenu:
+            return False
+        else:
+            return True
 
 def menu():
     pygame.init()

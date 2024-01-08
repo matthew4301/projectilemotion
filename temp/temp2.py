@@ -1,7 +1,7 @@
 import pygame
 import pygame_gui
 import math
-
+# not working for menu
 pygame.freetype.init()
 width = 800
 height = 600
@@ -69,7 +69,7 @@ class Graphics:
         self.font = pygame.font.SysFont("Arial", 30, False)
         self.bounds = pygame.Rect(0,0,width,height)
         self.launch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,10),(100,50)), text="Launch", manager=manager)
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,10),(100,50)), text="Reset", manager=manager)
+        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,70),(100,50)), text="Reset", manager=manager)
         self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,130), (100,50)), text="Main Menu", manager=manager)
         self.reset_var = False
         self.launch_var = False
@@ -85,26 +85,27 @@ class Graphics:
 
     def text(self,v_velocity,h_velocity,angle):
         textfont = pygame.font.Font(None,40)
-        window.blit(pygame.font.Font.render(textfont, str(round(clock.get_fps(),0)), True, self.black, None), (740,10))
         window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(v_velocity/50,2)}m/s", True, self.black, None), (2,40))
         window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(h_velocity/50,2)}m/s", True, self.black, None), (2,80))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {round(angle,0)}°", True, self.black, None), (2,0))
-        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (100,b.ball.y+10))
+        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+scale,b.ball.y+10))
 
     def button_checkpressed(self,button):
         if button == self.launch:
             button_pressed = "launch"
+            print("launch")
         if button == self.reset_button:
             button_pressed = "reset"
+            print("reset")
         if button == self.menu:
             button_pressed = "menu"
+            print("menu")
         return button_pressed
     
 def load_settings():
     try:
         with open("saves/settings.txt") as f:
             settings_list = f.read().splitlines()
-        print(settings_list)
         units_type = settings_list[0]
         units = settings_list[1]
         object = settings_list[2]
@@ -120,8 +121,8 @@ class Loop:
         self.back = False
 
     def calculations(self,mouse_x,mouse_y):
-        len_y = (height-((mouse_y+b.ball.y)-380))
-        len_x = (mouse_x+(b.ball.x+10))
+        len_y = mouse_y-b.ball.y
+        len_x = mouse_x-(b.ball.x+10)
         g.draw(mouse_x,mouse_y)
         v_distance, h_distance = c.distance(len_x,len_y)
         angle, self.back = c.angle(self.back,len_x,len_y)
@@ -130,10 +131,10 @@ class Loop:
 
     def mainloop(self):
         run = True
-        
         mouse_x = width/2
         mouse_y = height/2
         while run:
+            time_delta = clock.tick(60)/1000.0
             window.fill((207, 207, 207))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -143,6 +144,8 @@ class Loop:
             mouse_x,mouse_y = b.controls(mouse_x,mouse_y)
             len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity = self.calculations(mouse_x,mouse_y)
             g.text(v_velocity,h_velocity,angle)
+            manager.update(time_delta)
+            manager.draw_ui(window)
             pygame.display.update()
             clock.tick(fps)
         #return True
