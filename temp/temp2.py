@@ -1,6 +1,9 @@
 import pygame
 import pygame_gui
 import math
+import pylab as plb
+import matplotlib.pyplot as plt
+import time as t
 # not working for menu
 pygame.freetype.init()
 width = 800
@@ -26,18 +29,19 @@ class Ball:
     def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            mouse_x-=1
+            mouse_x-=5
         if keys[pygame.K_RIGHT]:
-            mouse_x+=1
+            mouse_x+=5
         if keys[pygame.K_UP]:
-            mouse_y-=1
+            mouse_y-=5
         if keys[pygame.K_DOWN]:
-            mouse_y+=1
+            mouse_y+=5
         return mouse_x,mouse_y
     
 class Calculations:
     def __init__(self) -> None:
-        pass
+        self.x = []
+        self.y = []
 
     def velocity(self,v_distance,h_distance):
         try:
@@ -51,8 +55,8 @@ class Calculations:
         return v_velocity,h_velocity
     
     def distance(self,len_x,len_y):
-        h_distance = len_x*10 # depending on scale
-        v_distance = len_y*10
+        h_distance = len_x/int(scale) # depending on scale
+        v_distance = len_y/int(scale)
         return h_distance,v_distance
     
     def angle(self,back,len_x,len_y):
@@ -64,13 +68,24 @@ class Calculations:
             angle = 90
         return angle,back
     
+    def trajectory(self,v_velocity,h_velocity,angle):
+        y0=100
+        mag = math.sqrt(v_velocity**2+h_velocity**2)       
+        b=-2*mag*math.sin(angle)
+        c=-2*y0
+        coeff=plb.array([float(acceleration),b,c])
+        t1,t2=plb.roots(coeff)
+        h1=mag**2*(math.sin(angle))**2/(2*float(acceleration))
+        h_max=h1*10+y0
+        R=mag*math.cos(angle)*plb.max(t1,t2)
+        self.x=plb.linspace(0,R,50)
+        self.y=self.x*math.tan(angle)-(1/2)*(float(acceleration)*self.x**2)/(mag**2*(math.cos(angle))**2)
+        return self.x, self.y # hmax
+    
 class Graphics:
     def __init__(self) -> None:
         self.font = pygame.font.SysFont("Arial", 30, False)
         self.bounds = pygame.Rect(0,0,width,height)
-        self.launch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,10),(100,50)), text="Launch", manager=manager)
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,70),(100,50)), text="Reset", manager=manager)
-        self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690,130), (100,50)), text="Main Menu", manager=manager)
         self.reset_var = False
         self.launch_var = False
         self.white = (255,255,255)
@@ -90,18 +105,9 @@ class Graphics:
         window.blit(pygame.font.Font.render(textfont, f"Angle: {round(angle,0)}°", True, self.black, None), (2,0))
         window.blit(pygame.font.Font.render(textfont, f"{len_x}, {len_y}", True, self.black, None), (2,120))
         window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+int(scale),b.ball.y+10))
-
-    def button_checkpressed(self,button):
-        if button == self.launch:
-            button_pressed = "launch"
-            print("launch")
-        if button == self.reset_button:
-            button_pressed = "reset"
-            print("reset")
-        if button == self.menu:
-            button_pressed = "menu"
-            print("menu")
-        return button_pressed
+        window.blit(pygame.font.Font.render(textfont, "Space - Launch Projectile", True, self.black, None), (530,10))
+        window.blit(pygame.font.Font.render(textfont, "A - Reset Launch", True, self.black, None), (530,30))
+        window.blit(pygame.font.Font.render(textfont, "ESC - Return to Menu", True, self.black, None), (530,50))
     
 def load_settings():
     try:
@@ -116,6 +122,10 @@ def load_settings():
         pass
     return units_type,units,object,acceleration,scale
 
+def plot(x,y): # temp
+    plt.plot(x,y)
+    plt.savefig("saves/xy.png")
+
 class Loop:
     def __init__(self) -> None:
         self.units_type, self.units, self.object, self.acceleration, self.scale = load_settings()
@@ -129,22 +139,27 @@ class Loop:
         angle, self.back = c.angle(self.back,len_x,len_y)
         v_velocity, h_velocity = c.velocity(v_distance,h_distance)
         return len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity
+    
+    def launch(self,v_velocity,h_velocity,angle):
+        x,y = c.trajectory(v_velocity,h_velocity,angle)
+        plot(x,y)
 
-    def mainloop(self): # 500 px = 6.26m/s, 2m/s = 51px, 3m/s = 115 px, 4m/s = 204px
+    def mainloop(self): #1m = 38.3333333333 px 500 scale
         run = True
         mouse_x = width/2
         mouse_y = height/2
+        button_pressed = None
         while run:
             time_delta = clock.tick(60)/1000.0
             window.fill((207, 207, 207))
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
-                if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                    button_pressed = g.button_checkpressed(event.ui_element)
             mouse_x,mouse_y = b.controls(mouse_x,mouse_y)
             len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity = self.calculations(mouse_x,mouse_y)
             g.text(v_velocity,h_velocity,angle,len_x,len_y)
+            keys = pygame.key.get_pressed()
+            #self.launch(v_velocity,h_velocity,angle)
             manager.update(time_delta)
             manager.draw_ui(window)
             pygame.display.update()
@@ -159,5 +174,4 @@ c = Calculations()
 l = Loop()
 
 units_type,units,object,acceleration,scale = load_settings()
-print(units_type,units,object,acceleration,scale)
 l.mainloop()
