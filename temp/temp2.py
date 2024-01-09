@@ -25,6 +25,7 @@ scale = 50
 class Ball:
     def __init__(self) -> None:
         self.ball = pygame.Rect(5,ground.y-10,10,10)
+        self.ball2 = pygame.Rect(5,ground.y-10,10,10)
     
     def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
@@ -40,6 +41,8 @@ class Ball:
     
 class Calculations:
     def __init__(self) -> None:
+        self.new_x = b.ball.x
+        self.new_y = b.ball.y
         self.x = []
         self.y = []
 
@@ -80,7 +83,16 @@ class Calculations:
         R=mag*math.cos(angle)*plb.max(t1,t2)
         self.x=plb.linspace(0,R,50)
         self.y=self.x*math.tan(angle)-(1/2)*(float(acceleration)*self.x**2)/(mag**2*(math.cos(angle))**2)
-        return self.x, self.y # hmax
+        return self.x, self.y, h_max
+    
+    def movement(self,h_velocity,v_velocity,duration,angle,i,h_max,down):
+        mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)
+        self.new_x = b.ball2.x+self.x[i]
+        self.new_y = b.ball2.y-self.y[i]
+        if self.newy <= height-h_max:
+            pass
+
+
     
 class Graphics:
     def __init__(self) -> None:
@@ -96,7 +108,7 @@ class Graphics:
     def draw(self,mouse_x,mouse_y):
         pygame.draw.rect(window,self.green,ground)
         pygame.draw.rect(window,self.black,b.ball)
-        pygame.draw.line(window,g.red,pygame.math.Vector2(b.ball.x+10,b.ball.y),pygame.math.Vector2(mouse_x,mouse_y),5)
+        pygame.draw.line(window,g.red,pygame.math.Vector2(b.ball.x+5,b.ball.y+5),pygame.math.Vector2(mouse_x,mouse_y),5)
 
     def text(self,v_velocity,h_velocity,angle,len_x,len_y):
         textfont = pygame.font.Font(None,30)
@@ -142,7 +154,7 @@ class Loop:
     
     def launch(self,v_velocity,h_velocity,angle):
         x,y = c.trajectory(v_velocity,h_velocity,angle)
-        plot(x,y)
+        #plot(x,y)
 
     def mainloop(self): #1m = 38.3333333333 px 500 scale
         run = True
@@ -159,7 +171,10 @@ class Loop:
             len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity = self.calculations(mouse_x,mouse_y)
             g.text(v_velocity,h_velocity,angle,len_x,len_y)
             keys = pygame.key.get_pressed()
-            #self.launch(v_velocity,h_velocity,angle)
+            if keys[pygame.K_ESCAPE]:
+                pygame.event.post(pygame.QUIT)
+            if keys[pygame.K_SPACE]:
+                self.launch(v_velocity,h_velocity,angle)
             manager.update(time_delta)
             manager.draw_ui(window)
             pygame.display.update()
