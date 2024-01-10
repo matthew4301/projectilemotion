@@ -1,221 +1,234 @@
 import pygame
-import pygame.freetype
 import pygame_gui
 import math
-import time as t
+import pylab as plb
 import matplotlib.pyplot as plt
+import time as t
 
 pygame.freetype.init()
+pygame.font.init()
 width = 800
 height = 600
 window = pygame.display.set_mode((width,height))
-pygame.display.set_caption("Projectile Motion")
-manager = pygame_gui.UIManager((800, 600))
+pygame.display.set_caption("Projectile Motion Simulator")
+manager = pygame_gui.UIManager((width,height))
+ground = pygame.Rect(-5,height-100,width+5,100)
 clock = pygame.time.Clock()
 fps = 60
-velocities = []
-time = []
-x = []
-y = []
-ground = pygame.Rect(5,height-100,width,100)
 
-class Buttons():
+# default settings state
+units_type = "Metric"
+units = "M"
+object = "Ball"
+acceleration = 9.81
+scale = 50
+
+class Ball:
     def __init__(self) -> None:
-        self.launch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 10), (100, 50)),text='Launch',manager=manager)
-        self.reset_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 70), (100, 50)),text='Reset',manager=manager)
-        self.menu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((690, 130), (100, 50)),text='Main Menu',manager=manager)
-        self.reset_var = False
-        self.launch_var = False
-
-    def checkpressed(self,button):
-        if button == self.launch:
-            self.launch_var = True
-        if button == self.reset_button:
-            self.reset_var = True
-        if button == self.quit:
-            return False
-
-bt = Buttons()
-
-def mainloop():
-    pygame.init()
-    run = True
-    back = False
-    first = True
-    duration = 0
-    mousex = width/2
-    mousey = height/2
-    ball_r2 = pygame.Rect(5,ground.y-10,10,10)
-    while run:
-        time_delta = clock.tick(60)/1000.0
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                c.graphs(x,y)
-                run = False
-            if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                run = b.checkpressed(event.ui_element)
-        mousex,mousey = b.controls(mousex,mousey)
-        leny = (height-((mousey+b.ball_r.y)-380))/10
-        if back == True:
-            lenx = (mousex+(b.ball_r.x+10))/10
-        else:
-            lenx = (mousex-(b.ball_r.x+10))/10
-        g.draw(ball_r2)
-        pygame.draw.line(window,g.red,pygame.math.Vector2(ball_r2.x+10,ball_r2.y),pygame.math.Vector2(mousex,mousey),5)
-        hdistance,vdistance = c.distance(lenx,leny)
-        angle,back = c.angle(back,lenx,leny)
-        if first == True:
-            vvelocity,hvelocity = c.velocity(c.gravity,vdistance,hdistance,angle)
-        g.text(vvelocity,hvelocity,angle,duration)
-        keys = pygame.key.get_pressed()
-        if bt.reset_var == True:
-            bt.reset_var = False
-            first,duration,ball_r2.x,ball_r2.y = b.reset()
-        if bt.launch_var == True:
-            bt.launch_var = False
-            while pygame.Rect.contains(ground,ball_r2) == False:
-                duration,ball_r2,back = b.movement(ball_r2,hvelocity,vvelocity,duration,first,back,mousex,mousey,angle)
-                if pygame.Rect.contains(g.bounds,ball_r2) == False:
-                    ball_r2 = g.bounds(ball_r2)
-        if pygame.Rect.contains(ground,ball_r2):
-            first,duration,ball_r2 = b.collision(first,duration,ball_r2)
-        manager.update(time_delta)
-        manager.draw_ui(window)
-        pygame.display.update()
-        clock.tick(fps)
-    return True
-
-class Ball():
-    def __init__(self) -> None:
-        self.ball_r = pygame.Rect(5,ground.y-10,10,10)
-        self.duration = 0
-        self.newx = 0
-        self.newy = 0
-
-    def controls(self,mousex,mousey):
+        self.ball = pygame.Rect(5,ground.y-10,10,10)
+    
+    def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            mousex-=5
+            mouse_x-=5
         if keys[pygame.K_RIGHT]:
-            mousex+=5
+            mouse_x+=5
         if keys[pygame.K_UP]:
-            mousey-=5
+            mouse_y-=5
         if keys[pygame.K_DOWN]:
-            mousey+=5
-        return mousex,mousey
+            mouse_y+=5
+        return mouse_x,mouse_y
     
-    def movement(self,ball_r2,hvelocity,vvelocity,duration,first,back,mousex,mousey,angle):
-        pygame.draw.rect(window,g.black,ball_r2)
-        if first == True:
-            mag = math.sqrt(hvelocity**2+vvelocity**2)
-            velocities.append(mag)
-            first = False
-        duration+=0.1
-        time.append(duration)
-        distancex = (hvelocity/2)*duration            
-        distancey = ((vvelocity/2)*duration)+((-4.9 * (duration**2))/2)
-        if back == True:
-            newx = ((b.ball_r.x)-distancex)
-            back = False
-        else:
-            newx = ((b.ball_r.x)+distancex)
-        x.append(newx)
-        newy = (b.ball_r.y-distancey)
-        y.append(height-newy)
-        ball_r2 = pygame.Rect(newx,newy,10,10)
-        window.fill(g.white)
-        g.draw(ball_r2)
-        g.text(vvelocity,hvelocity,angle,duration)
-        pygame.display.flip()
-        clock.tick(fps)
-        t.sleep(0.01)
-        return duration,ball_r2,back
-    
-    def collision(self,first,duration,ball_r2):
-        first = True
-        duration = 0
-        b.ball_r.x = ball_r2.x
-        b.ball_r.y = ball_r2.y-15
-        return first,duration,ball_r2
-
-    def reset(self):
-        duration = 0
-        b.ball_r.x = 5
-        b.ball_r.y = height-110
-        self.newx = b.ball_r.x
-        self.newy = b.ball_r.y
-        self.stop = False
-        first = True
-        return first,duration,5,(height-110)
-
-class Calculations():
+class Calculations:
     def __init__(self) -> None:
-        self.gravity = 9.81
+        self.new_x = b.ball.x
+        self.new_y = b.ball.y
+        self.x = []
+        self.y = []
+        self.velocities = []
+        self.time = []
+        self.duration = 0
 
-    def velocity(self,gravity,vdistance,hdistance,angle):
+    def velocity(self,v_distance,h_distance):
         try:
-            vvelocity = round(math.sqrt(2*gravity*vdistance),2)
+            v_velocity = round(math.sqrt(2*float(acceleration)*v_distance),2)
         except ValueError:
-            vvelocity = 0
+            v_velocity = 0
         try:
-            hvelocity = round(math.sqrt(2*gravity*hdistance),2)
+            h_velocity = round(math.sqrt(2*float(acceleration)*h_distance),2)
         except ValueError:
-            hvelocity = 0
-        return vvelocity,hvelocity
+            h_velocity = 0
+        return v_velocity,h_velocity
     
-    def angle(self,back,lenx,leny):
+    def distance(self,len_x,len_y):
+        h_distance = len_x/int(scale) # depending on scale
+        v_distance = len_y/int(scale)
+        return h_distance,v_distance
+    
+    def angle(self,back,len_x,len_y):
         try:
-            angle = round(math.degrees(math.atan(leny/lenx)))
+            angle = math.degrees(math.atan(len_y/len_x))
             if angle < 0:
                 back = True
         except ZeroDivisionError:
             angle = 90
         return angle,back
     
-    def distance(self,lenx,leny):
-        hdistance = round(lenx*10,2)
-        vdistance = round(leny*10,2)
-        return hdistance,vdistance
+    def trajectory(self,v_velocity,h_velocity,angle):
+        y0=100
+        mag = math.sqrt(v_velocity**2+h_velocity**2)       
+        b=-2*mag*math.sin(angle)
+        c=-2*y0
+        coeff=plb.array([float(acceleration),b,c])
+        t1,t2=plb.roots(coeff)
+        h1=mag**2*(math.sin(angle))**2/(2*float(acceleration))
+        h_max=h1*10+y0
+        R=mag*math.cos(angle)*plb.max(t1,t2)
+        self.x=plb.linspace(0,R,50)
+        self.y=self.x*math.tan(angle)-(1/2)*(float(acceleration)*self.x**2)/(mag**2*(math.cos(angle))**2)
+        return self.x, self.y, h_max
     
-    def graphs(self,x,y):
-        fig, (ax1, ax2) = plt.subplots(1, 2)
-        ax1.plot(x,y)
-        ax2.plot(velocities,time)
-        fig.savefig("saves/graphs/graphs.png")
+    def movement(self,h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down): # backwards???
+        mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)*10
+        if self.x[i] < 0:
+            self.new_x = (b.ball.x+self.x[i])*-1 # *int(scale)
+        else:
+            self.new_x = b.ball.x+self.x[i]
+        self.new_y = b.ball.y-self.y[i] # *int(scale)
+        if self.new_y <= height-h_max:
+            down = True
+        if down == True:
+            self.velocities.append(-mag_velocity)
+        else:
+            self.velocities.append(mag_velocity)
+        self.time.append(self.duration)
+        self.duration+=0.05
+        t.sleep(0.05)
+        b.ball = pygame.Rect(self.new_x,self.new_y,10,10)
+        window.fill(g.grey)
+        g.draw_rect()
+        g.draw_text(v_velocity,h_velocity,angle,len_x,len_y)
+        pygame.draw.rect(window,g.black,b.ball)
+        pygame.display.flip()
+        clock.tick(fps)
+        i+=1
+        return i,down
 
-class Graphics():
+class Graphics:
     def __init__(self) -> None:
+        self.font = pygame.font.SysFont("Arial", 30, False)
         self.bounds = pygame.Rect(0,0,width,height)
+        self.reset_var = False
+        self.launch_var = False
         self.white = (255,255,255)
         self.green = (0,100,0)
         self.red = (255,0,0)
         self.black = (0,0,0)
+        self.grey = (207,207,207)
 
-    def draw(self,ball_r2):
-        pygame.draw.rect(window,self.white,self.bounds)
+    def draw_rect(self):
         pygame.draw.rect(window,self.green,ground)
-        pygame.draw.rect(window,self.white,b.ball_r)
-        pygame.draw.rect(window,self.black,ball_r2)
-
-    def bounds(self,ball_r2):
-        if ball_r2.y > 600:
-            ball_r2.y = 590
-        if ball_r2.y < 0:
-            ball_r2.y = 10
-        if ball_r2.x > 800:
-            ball_r2.x = 790
-        if ball_r2.x < 0:
-            ball_r2.x = 10
-        return ball_r2
+        pygame.draw.rect(window,self.black,b.ball)
     
-    def text(self,vvelocity,hvelocity,angle,duration):
-        textfont = pygame.font.Font(None,40)
-        window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(vvelocity/50,2)}m/s", True, self.black, None), (2,40))
-        window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(hvelocity/50,2)}m/s", True, self.black, None), (2,80))
-        window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (2,0))
-        window.blit(pygame.font.Font.render(textfont, f"Time: {round(duration,2)}s", True, self.black, None), (2,120))
-        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (100,b.ball_r.y+10))
+    def draw_line(self,mouse_x,mouse_y):
+        pygame.draw.line(window,g.red,pygame.math.Vector2(b.ball.x+5,b.ball.y+5),pygame.math.Vector2(mouse_x,mouse_y),5)
+        
+    def draw_text(self,v_velocity,h_velocity,angle,len_x,len_y):
+        textfont = pygame.font.Font(None,30)
+        window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(v_velocity/50,2)}m/s", True, self.black, None), (2,40))
+        window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(h_velocity/50,2)}m/s", True, self.black, None), (2,80))
+        window.blit(pygame.font.Font.render(textfont, f"Angle: {round(angle,0)}°", True, self.black, None), (2,0))
+        window.blit(pygame.font.Font.render(textfont, f"{len_x}, {len_y}", True, self.black, None), (2,120))
+        window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+int(scale),ground.y))
+        window.blit(pygame.font.Font.render(textfont, "Space - Launch Projectile", True, self.black, None), (530,10))
+        window.blit(pygame.font.Font.render(textfont, "A - Reset Launch", True, self.black, None), (530,30))
+        window.blit(pygame.font.Font.render(textfont, "ESC - Return to Menu", True, self.black, None), (530,50))
+    
+def load_settings():
+    try:
+        with open("saves/settings.txt") as f:
+            settings_list = f.read().splitlines()
+        units_type = settings_list[0]
+        units = settings_list[1]
+        object = settings_list[2]
+        acceleration = settings_list[3]
+        scale = settings_list[4]
+    except IndexError:
+        pass
+    return units_type,units,object,acceleration,scale
 
-c = Calculations()
+def plot(x,y): # temp
+    plt.plot(x,y)
+    plt.savefig("saves/xy.png")
+
+class Loop:
+    def __init__(self) -> None:
+        self.units_type, self.units, self.object, self.acceleration, self.scale = load_settings()
+        self.back = False
+
+    def calculations(self,mouse_x,mouse_y):
+        len_y = b.ball.y-mouse_y
+        len_x = mouse_x-(b.ball.x+10)
+        g.draw_rect()
+        g.draw_line(mouse_x,mouse_y)
+        v_distance, h_distance = c.distance(len_y,len_x)
+        angle, self.back = c.angle(self.back,len_x,len_y)
+        v_velocity, h_velocity = c.velocity(v_distance,h_distance)
+        return len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity
+    
+    def launch(self,v_velocity,h_velocity,angle,len_x,len_y):
+        i = 0
+        down = False
+        x,y,h_max = c.trajectory(v_velocity,h_velocity,angle)
+        while pygame.Rect.contains(ground,b.ball) == False and i <= 50:
+            i,down = c.movement(h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down)
+            i+=1
+        b.ball = pygame.Rect(c.new_x,c.new_y-10,10,10)
+        pygame.draw.rect(window,g.black,b.ball)
+        #plot(x,y)
+
+    def mainloop(self): #1m = 38.3333333333 px 500 scale
+        pygame.init()
+        run = True
+        mouse_x = width/2
+        mouse_y = height/2
+        button_pressed = None
+        while run:
+            time_delta = clock.tick(60)/1000.0
+            window.fill(g.grey)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    file = open("temp/arrays.txt","w")
+                    for i in range(len(c.x)):
+                        file.write(str(c.x[i]) + "\n")
+                    file.write("\n")
+                    for i in range(len(c.y)):
+                        file.write(str(c.y[i]) + "\n")
+                    file.close()
+                    run = False
+            mouse_x,mouse_y = b.controls(mouse_x,mouse_y)
+            len_x,len_y,v_distance,h_distance,angle,v_velocity,h_velocity = self.calculations(mouse_x,mouse_y)
+            g.draw_text(v_velocity,h_velocity,angle,len_x,len_y)
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_ESCAPE]:
+                run = False
+            if keys[pygame.K_SPACE]:
+                self.launch(v_velocity,h_velocity,angle,len_x,len_y)
+            manager.update(time_delta)
+            manager.draw_ui(window)
+            pygame.display.update()
+            clock.tick(fps)
+        return True
+
+
 b = Ball()
 g = Graphics()
+c = Calculations()
+l = Loop()
+
+def start():
+    global units_type,units,object,acceleration,scale
+    end = False
+    units_type,units,object,acceleration,scale = load_settings()
+    end = l.mainloop()
+    return end

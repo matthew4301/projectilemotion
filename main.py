@@ -34,7 +34,7 @@ class Buttons():
         if button == self.alevel:
             self.teachfinished = teach.menu(False)
         if button == self.sandbox:
-            self.finished = projectile_simulator.mainloop()
+            self.finished = projectile_simulator.start()
         if button == self.load:
             self.loadfinished = load.menu()
         if button == self.settings:
