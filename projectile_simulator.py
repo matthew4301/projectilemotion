@@ -1,4 +1,5 @@
 import pygame
+import pygame.freetype
 import pygame_gui
 import math
 import pylab as plb
@@ -25,7 +26,7 @@ scale = 50
 
 class Ball:
     def __init__(self) -> None:
-        self.ball = pygame.Rect(5,ground.y-10,10,10)
+        self.ball = pygame.Rect(15,ground.y-10,10,10)
     
     def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
@@ -39,6 +40,21 @@ class Ball:
             mouse_y+=5
         return mouse_x,mouse_y
     
+    def reset(self):
+        c.duration = 0
+        self.ball.x = 15
+        self.ball.y = ground.y-10
+
+    def bounds_rect(self):
+        if self.ball.y > 600:
+            self.ball.y = 590
+        if self.ball.y < 0:
+            self.ball.y = 10
+        if self.ball.x > 800:
+            self.ball.x = 790
+        if self.ball.x < 0:
+            self.ball.x = 10
+        
 class Calculations:
     def __init__(self) -> None:
         self.new_x = b.ball.x
@@ -75,26 +91,17 @@ class Calculations:
         return angle,back
     
     def trajectory(self,v_velocity,h_velocity,angle):
-        y0=100
         mag = math.sqrt(v_velocity**2+h_velocity**2)       
-        b=-2*mag*math.sin(angle)
-        c=-2*y0
-        coeff=plb.array([float(acceleration),b,c])
-        t1,t2=plb.roots(coeff)
-        h1=mag**2*(math.sin(angle))**2/(2*float(acceleration))
-        h_max=h1*10+y0
-        R=mag*math.cos(angle)*plb.max(t1,t2)
-        self.x=plb.linspace(0,R,50)
+        R=mag**2*math.sin(2*angle)/9.81 # R=u**2*sin(2*α)/g
+        h_max=mag**2*(math.sin(angle))**2/(2*9.81)
+        self.x=plb.linspace(0,R,500)
         self.y=self.x*math.tan(angle)-(1/2)*(float(acceleration)*self.x**2)/(mag**2*(math.cos(angle))**2)
         return self.x, self.y, h_max
     
     def movement(self,h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down): # backwards???
-        mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)*10
-        if self.x[i] < 0:
-            self.new_x = (b.ball.x+self.x[i])*-1 # *int(scale)
-        else:
-            self.new_x = b.ball.x+self.x[i]
-        self.new_y = b.ball.y-self.y[i] # *int(scale)
+        mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)
+        self.new_x = b.ball.x+self.x[i]
+        self.new_y = b.ball.y-self.y[i]
         if self.new_y <= height-h_max:
             down = True
         if down == True:
@@ -107,6 +114,7 @@ class Calculations:
         b.ball = pygame.Rect(self.new_x,self.new_y,10,10)
         window.fill(g.grey)
         g.draw_rect()
+        b.bounds_rect()
         g.draw_text(v_velocity,h_velocity,angle,len_x,len_y)
         pygame.draw.rect(window,g.black,b.ball)
         pygame.display.flip()
@@ -160,6 +168,9 @@ def load_settings():
 def plot(x,y): # temp
     plt.plot(x,y)
     plt.savefig("saves/xy.png")
+    plt.close()
+    plt.plot(c.time,c.velocities)
+    plt.savefig("saves/veloctime.png")
 
 class Loop:
     def __init__(self) -> None:
@@ -180,12 +191,14 @@ class Loop:
         i = 0
         down = False
         x,y,h_max = c.trajectory(v_velocity,h_velocity,angle)
-        while pygame.Rect.contains(ground,b.ball) == False and i <= 50:
+        while pygame.Rect.contains(ground,b.ball) == False and i <= 500:
             i,down = c.movement(h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down)
             i+=1
+        if pygame.Rect.contains(ground,b.ball) == True or i > 500:
+            b.ball.y-=15
         b.ball = pygame.Rect(c.new_x,c.new_y-10,10,10)
         pygame.draw.rect(window,g.black,b.ball)
-        #plot(x,y)
+        plot(x,y)
 
     def mainloop(self): #1m = 38.3333333333 px 500 scale
         pygame.init()
@@ -214,6 +227,8 @@ class Loop:
                 run = False
             if keys[pygame.K_SPACE]:
                 self.launch(v_velocity,h_velocity,angle,len_x,len_y)
+            if keys[pygame.K_a]:
+                b.reset()
             manager.update(time_delta)
             manager.draw_ui(window)
             pygame.display.update()
