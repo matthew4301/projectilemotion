@@ -26,11 +26,7 @@ scale = 50
 
 class Ball:
     def __init__(self) -> None:
-<<<<<<< HEAD
         self.ball = pygame.Rect(15,ground.y-10,10,10)
-=======
-        self.ball = pygame.Rect(10,ground.y-10,10,10)
->>>>>>> 9657f85886e797a9c012c21978c9c0e0a967a65f
     
     def controls(self,mouse_x,mouse_y):
         keys = pygame.key.get_pressed()
@@ -46,7 +42,6 @@ class Ball:
     
     def reset(self):
         c.duration = 0
-<<<<<<< HEAD
         self.ball.x = 15
         self.ball.y = ground.y-10
 
@@ -60,11 +55,6 @@ class Ball:
         if self.ball.x < 0:
             self.ball.x = 10
         
-=======
-        self.ball.x = 10
-        self.ball.y = ground.y-10
-    
->>>>>>> 9657f85886e797a9c012c21978c9c0e0a967a65f
 class Calculations:
     def __init__(self) -> None:
         self.new_x = b.ball.x
@@ -109,18 +99,9 @@ class Calculations:
         return self.x, self.y, h_max
     
     def movement(self,h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down): # backwards???
-<<<<<<< HEAD
         mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)
         self.new_x = b.ball.x+self.x[i]
         self.new_y = b.ball.y-self.y[i]
-=======
-        mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)*10
-        if self.x[i] < 0:
-            self.new_x = (b.ball.x+(self.x[i]*-1))
-        else:
-            self.new_x = (b.ball.x+self.x[i])
-        self.new_y = (b.ball.y-self.y[i])
->>>>>>> 9657f85886e797a9c012c21978c9c0e0a967a65f
         if self.new_y <= height-h_max:
             down = True
         if down == True:
@@ -135,7 +116,6 @@ class Calculations:
         g.draw_rect()
         b.bounds_rect()
         g.draw_text(v_velocity,h_velocity,angle,len_x,len_y)
-        g.bounds_rect()
         pygame.draw.rect(window,g.black,b.ball)
         pygame.display.flip()
         clock.tick(fps)
@@ -163,24 +143,14 @@ class Graphics:
         
     def draw_text(self,v_velocity,h_velocity,angle,len_x,len_y):
         textfont = pygame.font.Font(None,30)
-        window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(v_velocity,2)}m/s", True, self.black, None), (2,40))
-        window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(h_velocity,2)}m/s", True, self.black, None), (2,80))
+        window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {round(v_velocity/50,2)}m/s", True, self.black, None), (2,40))
+        window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {round(h_velocity/50,2)}m/s", True, self.black, None), (2,80))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {round(angle,0)}°", True, self.black, None), (2,0))
         window.blit(pygame.font.Font.render(textfont, f"{len_x}, {len_y}", True, self.black, None), (2,120))
         window.blit(pygame.font.Font.render(textfont, "1m", True, self.black, None), (5+int(scale),ground.y))
         window.blit(pygame.font.Font.render(textfont, "Space - Launch Projectile", True, self.black, None), (530,10))
         window.blit(pygame.font.Font.render(textfont, "A - Reset Launch", True, self.black, None), (530,30))
         window.blit(pygame.font.Font.render(textfont, "ESC - Return to Menu", True, self.black, None), (530,50))
-
-    def bounds_rect(self):
-        if b.ball.y > 600:
-            b.ball.y = 590
-        if b.ball.y < 0:
-            b.ball.y = 10
-        if b.ball.x > 800:
-            b.ball.x = 790
-        if b.ball.x < 0:
-            b.ball.x = 10
     
 def load_settings():
     try:
@@ -264,6 +234,7 @@ class Loop:
             pygame.display.update()
             clock.tick(fps)
         return True
+
 
 b = Ball()
 g = Graphics()
