@@ -64,6 +64,7 @@ class Calculations:
         self.velocities = []
         self.time = []
         self.duration = 0
+        self.down = False
 
     def velocity(self,v_distance,h_distance):
         try:
@@ -92,19 +93,21 @@ class Calculations:
     
     def trajectory(self,v_velocity,h_velocity,angle):
         mag = math.sqrt(v_velocity**2+h_velocity**2)       
-        R=mag**2*math.sin(2*angle)/9.81 # R=u**2*sin(2*α)/g
+        R=mag**2*math.sin(2*angle)/9.81
         h_max=mag**2*(math.sin(angle))**2/(2*9.81)
-        self.x=plb.linspace(0,R,500)
+        self.x=plb.linspace(0,R,100)
         self.y=self.x*math.tan(angle)-(1/2)*(float(acceleration)*self.x**2)/(mag**2*(math.cos(angle))**2)
         return self.x, self.y, h_max
     
-    def movement(self,h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down): # backwards???
+    def movement(self,h_velocity,v_velocity,angle,len_x,len_y,i,h_max): # backwards???
         mag_velocity = math.sqrt(v_velocity**2+h_velocity**2)
         self.new_x = b.ball.x+self.x[i]
+        self.new_x*=-1
         self.new_y = b.ball.y-self.y[i]
+        i+=1
         if self.new_y <= height-h_max:
-            down = True
-        if down == True:
+            self.down = True
+        if self.down == True:
             self.velocities.append(-mag_velocity)
         else:
             self.velocities.append(mag_velocity)
@@ -114,13 +117,12 @@ class Calculations:
         b.ball = pygame.Rect(self.new_x,self.new_y,10,10)
         window.fill(g.grey)
         g.draw_rect()
-        b.bounds_rect()
+        #b.bounds_rect()
         g.draw_text(v_velocity,h_velocity,angle,len_x,len_y)
         pygame.draw.rect(window,g.black,b.ball)
         pygame.display.flip()
         clock.tick(fps)
-        i+=1
-        return i,down
+        return i
 
 class Graphics:
     def __init__(self) -> None:
@@ -189,16 +191,16 @@ class Loop:
     
     def launch(self,v_velocity,h_velocity,angle,len_x,len_y):
         i = 0
-        down = False
         x,y,h_max = c.trajectory(v_velocity,h_velocity,angle)
-        while pygame.Rect.contains(ground,b.ball) == False and i <= 500:
-            i,down = c.movement(h_velocity,v_velocity,angle,len_x,len_y,i,h_max,down)
+        plot(x,y)
+        while pygame.Rect.contains(ground,b.ball) == False and i <= 100:
+            i = c.movement(h_velocity,v_velocity,angle,len_x,len_y,i,h_max)
             i+=1
-        if pygame.Rect.contains(ground,b.ball) == True or i > 500:
+        if pygame.Rect.contains(ground,b.ball) == True or i > 100:
             b.ball.y-=15
         b.ball = pygame.Rect(c.new_x,c.new_y-10,10,10)
         pygame.draw.rect(window,g.black,b.ball)
-        plot(x,y)
+        c.down = False
 
     def mainloop(self): #1m = 38.3333333333 px 500 scale
         pygame.init()
