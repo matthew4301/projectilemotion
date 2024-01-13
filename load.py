@@ -1,5 +1,6 @@
 import pygame
 import pygame_gui
+import sqlite3
 
 pygame.freetype.init()
 window_surface = pygame.display.set_mode((800, 600))
@@ -37,4 +38,16 @@ def menu():
         pygame.display.update()
     return True
 
+def run():
+	with sqlite3.connect("saves/database.db") as db:
+		cursor = db.cursor()
+	cursor.execute('''
+CREATE TABLE IF NOT EXISTS users(
+userID INTEGER PRIMARY KEY,
+username VARCHAR(20) NOT NULL,
+firstname VARCHAR(20) NOT NULL,
+surname VARCHAR(20) NOT NULL,
+password VARCHAR(20) NOT NULL);''')
+	db.commit()
+     
 b = Buttons()
