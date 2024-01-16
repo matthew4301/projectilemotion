@@ -17,7 +17,7 @@ units_type = "Metric"
 units = "M"
 object = "Ball"
 acceleration = 9.81
-scale = 50
+scale = 25
 
 def load_settings():
     try:
@@ -45,8 +45,8 @@ class ball():
         pygame.draw.rect(window,green,ground)
 
     def ballPath(start_x,start_y,power,angle,time):
-        vel_x = (math.cos(angle) * power)/int(scale)
-        vel_y = (math.sin(angle) * power)/int(scale)
+        vel_x = (math.cos(angle) * power)
+        vel_y = (math.sin(angle) * power)
         dist_x = vel_x * time
         dist_y = (vel_y * time) + ((-4.9 * (time ** 2)) / 2)
         new_x = round(dist_x + start_x)
@@ -78,7 +78,7 @@ def findAngle(pos):
         angle = math.pi + abs(angle)
     elif pos[1] > sY and pos[0] > sX:
         angle = (math.pi * 2) - angle
-    return angle
+    return angle # radians
 
 Ball = ball(15,494,5,(255,255,255))
 
@@ -95,7 +95,7 @@ def mainloop():
         clock.tick(60)
         if shoot:
             if Ball.y > 494:
-                Ball.y = 499
+                y = 495
                 time = 0
                 shoot = False
             time += 0.1
@@ -104,7 +104,7 @@ def mainloop():
             Ball.y = po[1]
             vel_x = vel[0]
             vel_y = vel[1]
-            ball.bounds_rect(Ball)
+            #ball.bounds_rect(Ball)
         line = [(Ball.x, Ball.y), pygame.mouse.get_pos()]
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -115,7 +115,7 @@ def mainloop():
                     y = Ball.y
                     pos = pygame.mouse.get_pos()
                     shoot = True
-                    power = math.sqrt((line[1][1]-line[0][1])**2 +(line[1][0]-line[0][1])**2)*int(scale)
+                    power = math.sqrt((line[1][1]-line[0][1])**2 +(line[1][0]-line[0][1])**2)/(int(scale)/5)
                     angle = findAngle(pos)
         window.fill((207,207,207))
         Ball.draw(window)
