@@ -4,7 +4,7 @@ import pygame_gui
 import math
 import pylab as plb
 import matplotlib.pyplot as plt
-import os.path
+import os
 
 pygame.freetype.init()
 pygame.font.init()
@@ -24,24 +24,10 @@ object = "Ball"
 acceleration = 9.81
 scale = 50
 
-image_path = "saves/xy.png"
-timestamp = os.path.getmtime(image_path)
-
-class UpdatedImage:
-    def __init__(self, filename):
-        self.filename = filename
-        self.last_update = 0         
-        self.image = pygame.image.load(filename).convert()      
-        self.reload_image()
-    
-    def draw_image(self, window, position):
-        window.blit(self.image, position)
-
-    def reload_image(self):
-        current_file_time = os.path.getmtime(self.filename)
-        if (current_file_time > self.last_update):
-            self.last_update = current_file_time
-            self.draw_image(window,(0,0))
+try:
+    img = pygame.image.load("saves/xy.png").convert()
+except FileNotFoundError:
+    pass
 
 class Calculations:
     def __init__(self) -> None:
@@ -59,10 +45,10 @@ class Calculations:
     def trajectory(self,angle,v_velocity,h_velocity):
         mag_velocity = self.magnitude(v_velocity,h_velocity)
         R = mag_velocity**2*math.sin(2*angle)/float(acceleration)
-        h = mag_velocity**2*(math.sin(angle))**2/(2*float(acceleration))
+        h_max = mag_velocity**2*(math.sin(angle))**2/(2*float(acceleration))
         x = plb.linspace(0,R,50)
-        y = x*math.tan(angle)-(1/2)*(float(acceleration)*x**2)/(mag_velocity**2*(math.cos(angle))**2 )
-        return x,y # h_max?
+        y = x*math.tan(angle)-(1/2)*(float(acceleration)*x**2)/(mag_velocity**2*(math.cos(angle))**2)
+        return x,y,h_max
     
     def scale(self,x,y):
         for i in range(len(x)):
@@ -81,37 +67,45 @@ class Graphics:
         self.black = (0,0,0)
         self.grey = (207,207,207)
     
-    def draw_text(self,v_velocity,h_velocity,angle):
+    def draw_text(self,v_velocity,h_velocity,angle,h_max):
         textfont = pygame.font.Font(None,30)
         if units == "M":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}m/s", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}m/s", True, self.black, None), (160,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}m/s", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}m/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}m", True, self.black, None), (10,550))
         if units == "CM":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}cm/s", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}cm/s", True, self.black, None), (160,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}cm/s", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}cm/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}cm", True, self.black, None), (10,550))
         if units == "KM":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}km/h", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}km/h", True, self.black, None), (160,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}km/h", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}km/h", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}km", True, self.black, None), (10,550))
         if units == "IN":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}in/s", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}in/s", True, self.black, None), (160,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}in/s", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}in/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}in", True, self.black, None), (10,550))
         if units == "FT":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}ft/m", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}ft/m", True, self.black, None), (160,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}ft/m", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}ft/m", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}ft", True, self.black, None), (10,550))
         if units == "MI":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}mph", True, self.black, None), (410,550))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}mph", True, self.black, None), (160,550))
-        window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}mph", True, self.black, None), (410,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}mph", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}mi", True, self.black, None), (10,550))
+        window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (10,500))
     
-    def keyboard(self,v_velocity,h_velocity,angle):
+    def keyboard(self,v_velocity,h_velocity,angle,h_max):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             run = False
         else:
             run = True
         if keys[pygame.K_SPACE]:
-            window.fill(g.grey)
-            x,y = c.trajectory(angle,v_velocity,h_velocity)
+            window.clear()
+            if os.path.isfile("saves/xy.png"):
+                os.remove("saves/xy.png")
+            x,y,h_max = c.trajectory(angle,v_velocity,h_velocity)
             x,y = c.scale(x,y)
             plot(x,y)
         if keys[pygame.K_UP]:
@@ -126,7 +120,7 @@ class Graphics:
             angle+=1
         if keys[pygame.K_s]:
             angle-=1
-        return run,v_velocity,h_velocity,angle
+        return run,v_velocity,h_velocity,angle,h_max
     
 def load_settings():
     try:
@@ -144,26 +138,30 @@ def load_settings():
 def plot(x,y):
     plt.xlim(0,100/int(scale))
     plt.ylim(0,100/int(scale))
+    plt.xlabel("Horizontal Distance")
+    plt.ylabel("Vertical Distance")
     plt.plot(x,y)
     plt.savefig("saves/xy.png")
 
 def mainloop():
     pygame.init()
-    image = UpdatedImage("saves/xy.png")
     run = True
     v_velocity = 0
     h_velocity = 0
     angle = 0
+    h_max = 0
     while run:
         time_delta = clock.tick(60)/1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        run,v_velocity,h_velocity,angle = g.keyboard(v_velocity,h_velocity,angle)
+        run,v_velocity,h_velocity,angle,h_max = g.keyboard(v_velocity,h_velocity,angle,h_max)
         window.fill(g.white)
-        g.draw_text(v_velocity,h_velocity,angle)
-        image.reload_image()
-        image.draw_image(window,(0,0))
+        g.draw_text(v_velocity,h_velocity,angle,h_max)
+        try:
+            window.blit(img,(0,0))
+        except NameError:
+            pass
         manager.update(time_delta)
         manager.draw_ui(window)
         pygame.display.update()
