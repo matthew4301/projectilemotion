@@ -15,7 +15,7 @@ pygame.display.set_caption("Projectile Motion Simulator")
 manager = pygame_gui.UIManager((width,height))
 ground = pygame.Rect(-5,height-100,width+5,100)
 clock = pygame.time.Clock()
-fps = 60
+fps = 10
 
 # default settings state
 units_type = "Metric"
@@ -41,6 +41,7 @@ class Calculations:
         mag_velocity = self.magnitude(v_velocity,h_velocity)
         R = mag_velocity**2*math.sin(2*angle)/float(acceleration)
         h_max = mag_velocity**2*(math.sin(angle))**2/(2*float(acceleration))
+        h_max/=int(scale)
         x = plb.linspace(0,R,50)
         y = x*math.tan(angle)-(1/2)*(float(acceleration)*x**2)/(mag_velocity**2*(math.cos(angle))**2)
         return x,y,h_max
@@ -115,7 +116,6 @@ class Graphics:
             except FileNotFoundError:
                 pass
             show = True
-            pygame.display.update()
         if keys[pygame.K_UP]:
             v_velocity+=0.5
         if keys[pygame.K_DOWN]:
@@ -144,12 +144,15 @@ def load_settings():
     return units_type,units,object,acceleration,scale
 
 def plot(x,y):
-    plt.xlim(0,100/int(scale))
-    plt.ylim(0,100/int(scale))
+    plt.xlim(-100/int(scale),100/int(scale))
+    plt.ylim(-100/int(scale),100/(int(scale)/2))
+    plt.axhline(0,color='black')
+    plt.axvline(0,color='black')
     plt.xlabel("Horizontal Distance")
     plt.ylabel("Vertical Distance")
     plt.plot(x,y)
     plt.savefig("saves/xy.png")
+    plt.close()
 
 def mainloop():
     pygame.init()
