@@ -9,7 +9,7 @@ from sys import exit
 pygame.init()
 pygame.freetype.init()
 pygame.display.set_caption('Projectile Motion Simulator')
-window_surface = pygame.display.set_mode((800, 600))
+window_surface = pygame.display.set_mode((800, 600)) # increase to users screen size
 background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)

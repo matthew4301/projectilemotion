@@ -2,4 +2,4 @@ Metric
 M
 Ball
 9.81
-25
+50
