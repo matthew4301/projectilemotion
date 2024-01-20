@@ -22,7 +22,7 @@ units_type = "Metric"
 units = "M"
 object = "Ball"
 acceleration = 9.81
-scale = 50
+scale = 25
 
 class Calculations:
     def __init__(self) -> None:
@@ -41,17 +41,21 @@ class Calculations:
         mag_velocity = self.magnitude(v_velocity,h_velocity)
         R = mag_velocity**2*math.sin(2*angle)/float(acceleration)
         h_max = mag_velocity**2*(math.sin(angle))**2/(2*float(acceleration))
-        h_max/=int(scale)
         x = plb.linspace(0,R,50)
         y = x*math.tan(angle)-(1/2)*(float(acceleration)*x**2)/(mag_velocity**2*(math.cos(angle))**2)
         return x,y,h_max
     
-    def scale(self,x,y):
-        for i in range(len(x)):
-            x[i]/=int(scale)
-        for i in range(len(y)):
-            y[i]/=int(scale)
-        return x,y
+    def solve_time(self,v_velocity,h_velocity,h_max): # s = ut+1/2at^2
+        b = self.magnitude(v_velocity,h_velocity)
+        a = 0.5 * acceleration
+        c = -h_max
+        t1 = ((-b)+math.sqrt((b**2)-(4*a*c)))/(2*a)
+        t2 = ((-b)-math.sqrt((b**2)-(4*a*c)))/(2*a)
+        if t1 < 0:
+            t = t2
+        if t2 < 0:
+            t = t1
+        return t*2
 
 class Graphics:
     def __init__(self) -> None:
@@ -63,7 +67,7 @@ class Graphics:
         self.black = (0,0,0)
         self.grey = (207,207,207)
     
-    def draw_text(self,v_velocity,h_velocity,angle,h_max):
+    def draw_text(self,v_velocity,h_velocity,angle,h_max,t):
         textfont = pygame.font.Font(None,30)
         if units == "M":
             window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}m/s", True, self.black, None), (450,500))
@@ -90,6 +94,7 @@ class Graphics:
             window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}mph", True, self.black, None), (160,500))
             window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}mi", True, self.black, None), (10,550))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (10,500))
+        window.blit(pygame.font.Font.render(textfont, f"Time: {round(t,2)}", True, self.black, None), (200,550))
     
     def show_image(self,img):
         try:
@@ -97,7 +102,7 @@ class Graphics:
         except NameError:
             pass
 
-    def keyboard(self,v_velocity,h_velocity,angle,h_max,show,img):
+    def keyboard(self,v_velocity,h_velocity,angle,h_max,show,img,t):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_ESCAPE]:
             run = False
@@ -109,8 +114,8 @@ class Graphics:
             if os.path.isfile("saves/xy.png"):
                 os.remove("saves/xy.png")
             x,y,h_max = c.trajectory(angle,v_velocity,h_velocity)
-            x,y = c.scale(x,y)
-            plot(x,y)
+            t = c.solve_time(v_velocity,h_velocity,h_max)
+            plot(x,y,v_velocity,h_velocity,t)
             try:
                 img = pygame.image.load("saves/xy.png").convert()
             except FileNotFoundError:
@@ -128,7 +133,7 @@ class Graphics:
             angle+=1
         if keys[pygame.K_s]:
             angle-=1
-        return run,v_velocity,h_velocity,angle,h_max,show,img
+        return run,v_velocity,h_velocity,angle,h_max,show,img,t
     
 def load_settings():
     try:
@@ -137,21 +142,32 @@ def load_settings():
         units_type = settings_list[0]
         units = settings_list[1]
         object = settings_list[2]
-        acceleration = settings_list[3]
-        scale = settings_list[4]
+        acceleration = float(settings_list[3])
+        scale = int(settings_list[4])
     except IndexError:
         pass
     return units_type,units,object,acceleration,scale
 
-def plot(x,y):
-    plt.xlim(-100/int(scale),100/int(scale))
-    plt.ylim(-100/int(scale),100/(int(scale)/2))
+def plot(x,y,v_velocity,h_velocity,t):
+    v = c.magnitude(v_velocity,h_velocity)
+    plt.figure(0)
+    plt.xlim(-scale,scale)
+    plt.ylim(-scale,scale)
     plt.axhline(0,color='black')
     plt.axvline(0,color='black')
     plt.xlabel("Horizontal Distance")
     plt.ylabel("Vertical Distance")
     plt.plot(x,y)
     plt.savefig("saves/xy.png")
+    plt.close()
+    plt.figure(1)
+    plt.xlim(0,5)
+    plt.ylim(-50,50)
+    plt.plot((0,t),(v,-v))
+    plt.axhline(0,color='black')
+    plt.xlabel("Time")
+    plt.ylabel("Velocity")
+    plt.savefig("vel_time.png")
     plt.close()
 
 def mainloop():
@@ -162,6 +178,7 @@ def mainloop():
     h_velocity = 0
     angle = 0
     h_max = 0
+    t = 0
     if os.path.isfile("saves/xy.png"):
         os.remove("saves/xy.png")
     try:
@@ -173,9 +190,9 @@ def mainloop():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-        run,v_velocity,h_velocity,angle,h_max,show,img = g.keyboard(v_velocity,h_velocity,angle,h_max,show,img)
+        run,v_velocity,h_velocity,angle,h_max,show,img,t = g.keyboard(v_velocity,h_velocity,angle,h_max,show,img,t)
         window.fill(g.white)
-        g.draw_text(v_velocity,h_velocity,angle,h_max)
+        g.draw_text(v_velocity,h_velocity,angle,h_max,t)
         if show == True:
             g.show_image(img)
         manager.update(time_delta)
