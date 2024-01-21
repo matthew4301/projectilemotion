@@ -70,31 +70,31 @@ class Graphics:
     def draw_text(self,v_velocity,h_velocity,angle,h_max,t):
         textfont = pygame.font.Font(None,30)
         if units == "M":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}m/s", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}m/s", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}m", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} m/s", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} m/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} m", True, self.black, None), (10,550))
         if units == "CM":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}cm/s", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}cm/s", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}cm", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} cm/s", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} cm/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} ncm", True, self.black, None), (10,550))
         if units == "KM":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}km/h", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}km/h", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}km", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} km/h", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} km/h", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} km", True, self.black, None), (10,550))
         if units == "IN":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}in/s", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}in/s", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}in", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} in/s", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} in/s", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} in", True, self.black, None), (10,550))
         if units == "FT":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}ft/m", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}ft/m", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}ft", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} ft/m", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} ft/m", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} ft", True, self.black, None), (10,550))
         if units == "MI":
-            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity}mph", True, self.black, None), (450,500))
-            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity}mph", True, self.black, None), (160,500))
-            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)}mi", True, self.black, None), (10,550))
+            window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} mph", True, self.black, None), (450,500))
+            window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} mph", True, self.black, None), (160,500))
+            window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} mi", True, self.black, None), (10,550))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (10,500))
-        window.blit(pygame.font.Font.render(textfont, f"Time: {round(t,2)}", True, self.black, None), (200,550))
+        window.blit(pygame.font.Font.render(textfont, f"Time: {round(t,2)} s", True, self.black, None), (200,550))
     
     def show_image(self,img):
         try:
@@ -121,6 +121,8 @@ class Graphics:
             except FileNotFoundError:
                 pass
             show = True
+        if keys[pygame.K_RETURN]:
+            pass # show graphs
         if keys[pygame.K_UP]:
             v_velocity+=0.5
         if keys[pygame.K_DOWN]:
@@ -161,8 +163,8 @@ def plot(x,y,v_velocity,h_velocity,t):
     plt.savefig("saves/xy.png")
     plt.close()
     plt.figure(1)
-    plt.xlim(0,5)
-    plt.ylim(-50,50)
+    plt.xlabel("Time")
+    plt.ylabel("Velocity")
     plt.plot((0,t),(v,-v))
     plt.axhline(0,color='black')
     plt.xlabel("Time")
