@@ -1,5 +1,5 @@
-Metric
-M
+Imperial
+IN
 Ball
 9.81
-50
+25

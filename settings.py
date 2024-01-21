@@ -35,26 +35,18 @@ class Save:
 
 class Buttons:
     def __init__(self) -> None:
-        self.metric = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 125), (150, 50)),text='Metric',manager=manager)
-        self.imperial = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 125), (150, 50)),text='Imperial',manager=manager)
         self.cm = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 225), (150, 50)),text='Centimeters',manager=manager)
         self.meters = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 275), (150, 50)),text='Meters',manager=manager)
         self.km = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 325), (150, 50)),text='Kilometers',manager=manager)
         self.inch = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 225), (150, 50)),text='Inches',manager=manager)
         self.ft = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 275), (150, 50)),text='Feet',manager=manager)
         self.miles = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 325), (150, 50)),text='Miles',manager=manager)
-        self.ball = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 425), (150, 50)),text='Ball',manager=manager)
-        self.rocket = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((225, 425), (150, 50)),text='Rocket',manager=manager)
         self.gravity = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((475, 225), (250, 50)),text='Set to Gravity (9.81)',manager=manager)
         self.acceleration_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((475, 175), (250,25)), start_value=9.81, value_range=(1,20),manager=manager)
         self.scale_slider = pygame_gui.elements.UIHorizontalSlider(relative_rect=pygame.Rect((475, 375), (250,25)), start_value=25, value_range=(1,50),manager=manager)
         self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((270, 500), (250, 50)),text='Main Menu',manager=manager)
 
     def checkpressed(self,button):
-        if button == self.metric:
-            s.units_type = "Metric"
-        if button == self.imperial:
-            s.units_type = "Imperial"
         if button == self.cm:
             s.units = "CM"
         if button == self.meters:
@@ -67,10 +59,6 @@ class Buttons:
             s.units = "FT"
         if button == self.miles:
             s.units = "MI"
-        if button == self.ball:
-            s.object = "Ball"
-        if button == self.rocket:
-            s.object = "Rocket"
         if button == self.gravity:
             s.acceleration = 9.81
         s.save()
@@ -102,10 +90,8 @@ def menu():
         s.acceleration = acceleration
         s.scale = scale
         window_surface.blit(font.render("Settings", True, black, None),(320,15))
-        window_surface.blit(font2.render("Units", True, black, None),(25,75))
         window_surface.blit(font2.render("Distance Unit", True, black, None),(25,175))
-        window_surface.blit(font2.render("Object", True, black, None),(25,375))
-        window_surface.blit(font2.render(f"Scale - {scale}", True, black, None),(475,325))
+        window_surface.blit(font2.render(f"Graph Scale - {scale}", True, black, None),(475,325))
         window_surface.blit(font2.render(f"Acceleration - {acceleration}", True, black, None),(475,125))
         pygame.display.update()
     return True
