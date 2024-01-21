@@ -19,24 +19,18 @@ manager = pygame_gui.UIManager((800, 600))
 
 class Buttons():
     def __init__(self):
-        self.gcse = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 175), (250, 50)),text='Start As GCSE',manager=manager)
-        self.alevel = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 225), (250, 50)),text='Start As A-Level',manager=manager)
-        self.sandbox = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 275), (250, 50)),text='Sandbox Mode',manager=manager)
-        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 50)),text='Load',manager=manager)
-        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Settings',manager=manager)
-        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 425), (250, 50)),text='Quit',manager=manager)
+        self.sandbox = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 175), (250, 75)),text='Simulator',manager=manager)
+        self.teaching = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 75)),text='Teaching',manager=manager)
+        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 75)),text='Settings',manager=manager)
+        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Quit',manager=manager)
         self.finished = False
         self.teachfinished = False
 
     def checkpressed(self,button):
-        if button == self.gcse:
-            self.teachfinished = teach.menu(True)
-        if button == self.alevel:
-            self.teachfinished = teach.menu(False)
+        if button == self.teaching:
+            self.teachfinished = teach.menu()
         if button == self.sandbox:
             self.finished = projectile_simulator.mainloop()
-        if button == self.load:
-            self.loadfinished = load.menu()
         if button == self.settings:
             self.settingsfinished = settings.menu()
         if button == self.quit:
