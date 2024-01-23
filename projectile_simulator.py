@@ -3,6 +3,7 @@ import pygame.freetype
 import pygame_gui
 import math
 import pylab as plb
+import numpy as np
 import matplotlib.pyplot as plt
 import os
 
@@ -56,6 +57,19 @@ class Calculations:
         if t2 < 0:
             t = t1
         return t*2
+    
+    def find_equation(self,v_velocity,h_velocity,t):
+        mag_velocity = self.magnitude(v_velocity,h_velocity)
+        #gradient = (2*mag_velocity)/t
+        gradient = float(acceleration)
+        print(gradient)
+        constant = (-mag_velocity)-(gradient*t)
+        print(constant)
+        return gradient,constant
+    
+    def integrate(self,gradient):
+        gradient_integrated = (gradient**2)/2
+        return gradient_integrated
 
 class Graphics:
     def __init__(self) -> None:
@@ -69,6 +83,7 @@ class Graphics:
     
     def draw_text(self,v_velocity,h_velocity,angle,h_max,t):
         textfont = pygame.font.Font(None,30)
+        textfont2 = pygame.font.Font(None,20)
         if units == "M":
             window.blit(pygame.font.Font.render(textfont, f"Horizontal Velocity: {h_velocity} m/s", True, self.black, None), (450,500))
             window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} m/s", True, self.black, None), (160,500))
@@ -94,7 +109,10 @@ class Graphics:
             window.blit(pygame.font.Font.render(textfont, f"Vertical Velocity: {v_velocity} mph", True, self.black, None), (160,500))
             window.blit(pygame.font.Font.render(textfont, f"Max Height: {round(h_max,2)} mi", True, self.black, None), (10,550))
         window.blit(pygame.font.Font.render(textfont, f"Angle: {angle}°", True, self.black, None), (10,500))
-        window.blit(pygame.font.Font.render(textfont, f"Time: {round(t,2)} s", True, self.black, None), (200,550))
+        window.blit(pygame.font.Font.render(textfont, f"Time: {round(t,2)} s", True, self.black, None), (250,550))
+        window.blit(pygame.font.Font.render(textfont2, f"ESC: Return to Main Menu", True, self.black, None), (450,530))
+        window.blit(pygame.font.Font.render(textfont2, f"SPACE: Launch Projectile", True, self.black, None), (450,550))
+        window.blit(pygame.font.Font.render(textfont2, f"ENTER: Show Graphs", True, self.black, None), (450,570))
     
     def show_image(self,img):
         try:
@@ -115,14 +133,17 @@ class Graphics:
                 os.remove("saves/xy.png")
             x,y,h_max = c.trajectory(angle,v_velocity,h_velocity)
             t = c.solve_time(v_velocity,h_velocity,h_max)
-            plot(x,y,v_velocity,h_velocity,t)
+            plot_xy(x,y)
             try:
                 img = pygame.image.load("saves/xy.png").convert()
             except FileNotFoundError:
                 pass
             show = True
         if keys[pygame.K_RETURN]:
-            pass # show graphs
+            gradient,constant = c.find_equation(v_velocity,h_velocity,t)
+            gradient_integrated = c.integrate(gradient)
+            plot_acceltime(t)
+            plot_displtime(gradient_integrated,constant,t)
         if keys[pygame.K_UP]:
             v_velocity+=0.5
         if keys[pygame.K_DOWN]:
@@ -150,8 +171,7 @@ def load_settings():
         pass
     return units_type,units,object,acceleration,scale
 
-def plot(x,y,v_velocity,h_velocity,t):
-    v = c.magnitude(v_velocity,h_velocity)
+def plot_xy(x,y):
     plt.figure(0)
     plt.xlim(-scale,scale)
     plt.ylim(-scale,scale)
@@ -162,6 +182,9 @@ def plot(x,y,v_velocity,h_velocity,t):
     plt.plot(x,y)
     plt.savefig("saves/xy.png")
     plt.close()
+
+def plot_veloctime(v_velocity,h_velocity,t):
+    v = c.magnitude(v_velocity,h_velocity)
     plt.figure(1)
     plt.xlabel("Time")
     plt.ylabel("Velocity")
@@ -169,7 +192,27 @@ def plot(x,y,v_velocity,h_velocity,t):
     plt.axhline(0,color='black')
     plt.xlabel("Time")
     plt.ylabel("Velocity")
-    plt.savefig("vel_time.png")
+    plt.savefig("saves/vel_time.png")
+    plt.close()
+
+def plot_acceltime(t):
+    plt.figure(2)
+    plt.xlabel("Time")
+    plt.ylabel("Acceleration")
+    plt.xlim(0,t)
+    plt.ylim(0,float(acceleration)*2)
+    plt.plot((0,t),(float(acceleration),float(acceleration)))
+    plt.savefig("saves/accel_time.png")
+    plt.close()
+
+def plot_displtime(gradient_integrated,constant,t):
+    plt.figure(3)
+    x = plb.arange(0,t,0.1)
+    y = -gradient_integrated*(x**2) + constant*x
+    plt.xlabel("Time")
+    plt.ylabel("Displacement")
+    plt.plot(x,y)
+    plt.savefig("saves/displ_time.png")
     plt.close()
 
 def mainloop():
