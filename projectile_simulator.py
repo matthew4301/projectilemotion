@@ -39,6 +39,7 @@ class Calculations:
         return math.sqrt(v_velocity**2+h_velocity**2)
 
     def trajectory(self,angle,v_velocity,h_velocity):
+        angle = math.radians(angle)
         mag_velocity = self.magnitude(v_velocity,h_velocity)
         R = mag_velocity**2*math.sin(2*angle)/float(acceleration)
         h_max = mag_velocity**2*(math.sin(angle))**2/(2*float(acceleration))
