@@ -6,6 +6,7 @@ import pylab as plb
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import graphs
 
 pygame.freetype.init()
 pygame.font.init()
@@ -146,6 +147,7 @@ class Graphics:
             plot_acceltime(t)
             plot_veloctime(v_velocity,h_velocity,t)
             plot_displtime(gradient_integrated,constant,t,h_max)
+            graphs.menu()
         if keys[pygame.K_UP]:
             v_velocity+=0.5
         if keys[pygame.K_DOWN]:
