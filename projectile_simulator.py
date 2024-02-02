@@ -144,7 +144,8 @@ class Graphics:
             gradient,constant = c.find_equation(v_velocity,h_velocity,t)
             gradient_integrated = c.integrate(gradient)
             plot_acceltime(t)
-            plot_displtime(gradient_integrated,constant,t)
+            plot_veloctime(v_velocity,h_velocity,t)
+            plot_displtime(gradient_integrated,constant,t,h_max)
         if keys[pygame.K_UP]:
             v_velocity+=0.5
         if keys[pygame.K_DOWN]:
@@ -206,12 +207,16 @@ def plot_acceltime(t):
     plt.savefig("saves/accel_time.png")
     plt.close()
 
-def plot_displtime(gradient_integrated,constant,t):
+def plot_displtime(gradient_integrated,constant,t,h_max):
     plt.figure(3)
-    x = plb.arange(0,t,0.1)
+    x = plb.arange(0,t*2,0.01)
+    if constant < 0:
+        constant*=-1
     y = -gradient_integrated*(x**2) + constant*x
     plt.xlabel("Time")
     plt.ylabel("Displacement")
+    plt.ylim(0,h_max)
+    plt.xlim(0,t*2)
     plt.plot(x,y)
     plt.savefig("saves/displ_time.png")
     plt.close()
