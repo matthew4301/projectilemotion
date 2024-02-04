@@ -58,15 +58,15 @@ class Calculations:
             t = t2
         if t2 < 0:
             t = t1
+        print(t*2)
+        print(h_max)
         return t*2
     
     def find_equation(self,v_velocity,h_velocity,t):
         mag_velocity = self.magnitude(v_velocity,h_velocity)
         #gradient = (2*mag_velocity)/t
         gradient = float(acceleration)
-        print(gradient)
         constant = (-mag_velocity)-(gradient*t)
-        print(constant)
         return gradient,constant
     
     def integrate(self,gradient):
@@ -146,7 +146,7 @@ class Graphics:
             gradient_integrated = c.integrate(gradient)
             plot_acceltime(t)
             plot_veloctime(v_velocity,h_velocity,t)
-            plot_displtime(gradient_integrated,constant,t,h_max)
+            plot_displtime(t,h_max)
             graphs.menu()
         if keys[pygame.K_UP]:
             v_velocity+=0.5
@@ -189,7 +189,9 @@ def plot_xy(x,y):
 
 def plot_veloctime(v_velocity,h_velocity,t):
     v = c.magnitude(v_velocity,h_velocity)
-    plt.figure(1)
+    f = plt.figure(1)
+    f.set_figwidth(8)
+    f.set_figheight(6)
     plt.xlabel("Time")
     plt.ylabel("Velocity")
     plt.plot((0,t),(v,-v))
@@ -200,7 +202,9 @@ def plot_veloctime(v_velocity,h_velocity,t):
     plt.close()
 
 def plot_acceltime(t):
-    plt.figure(2)
+    f = plt.figure(2)
+    f.set_figwidth(8)
+    f.set_figheight(6)
     plt.xlabel("Time")
     plt.ylabel("Acceleration")
     plt.xlim(0,t)
@@ -209,16 +213,19 @@ def plot_acceltime(t):
     plt.savefig("saves/accel_time.png")
     plt.close()
 
-def plot_displtime(gradient_integrated,constant,t,h_max):
-    plt.figure(3)
+def plot_displtime(t,h_max):
+    f = plt.figure(3)
+    f.set_figwidth(8)
+    f.set_figheight(6)
     x = plb.arange(0,t*2,0.01)
-    if constant < 0:
-        constant*=-1
-    y = -gradient_integrated*(x**2) + constant*x
+    h = 2.2*h_max
+    a = -(2*h)/(t**2+t**3)
+    b = -a*t
+    print(a,b)
+    y = a*(x**2)+(b*x)
     plt.xlabel("Time")
     plt.ylabel("Displacement")
     plt.ylim(0,h_max)
-    plt.xlim(0,t*2)
     plt.plot(x,y)
     plt.savefig("saves/displ_time.png")
     plt.close()

@@ -4,7 +4,7 @@ A particle is moving at a constant decceleration of 2ms-2. At time t = 0, the ve
 .
 A particle moves from rest at a constant acceleration of 5ms-2. Find the velocity when t = 10.
 .
-
+    
 .
 
 .
