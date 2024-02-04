@@ -89,7 +89,7 @@ def menu():
         scale = str(round(b.scale_slider.get_current_value(),0))
         s.acceleration = acceleration
         s.scale = scale
-        window_surface.blit(font.render("Settings", True, black, None),(320,15))
+        window_surface.blit(font.render("Settings (restart after selection)", True, black, None),(320,15))
         window_surface.blit(font2.render("Distance Unit", True, black, None),(25,175))
         window_surface.blit(font2.render(f"Graph Scale - {scale}", True, black, None),(475,325))
         window_surface.blit(font2.render(f"Acceleration - {acceleration}", True, black, None),(475,125))
