@@ -1,6 +1,7 @@
 import pygame
 import pygame.freetype
 import pygame_gui
+import questions
 from sys import exit
 
 pygame.freetype.init()
@@ -18,7 +19,7 @@ class Buttons():
 
     def checkpressed(self,button):
         if button == self.questions:
-            pass
+            questions.start()
         if button == self.load:
             pass
         if button == self.mainmenu:

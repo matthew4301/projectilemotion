@@ -58,20 +58,7 @@ class Calculations:
             t = t2
         if t2 < 0:
             t = t1
-        print(t*2)
-        print(h_max)
         return t*2
-    
-    def find_equation(self,v_velocity,h_velocity,t):
-        mag_velocity = self.magnitude(v_velocity,h_velocity)
-        #gradient = (2*mag_velocity)/t
-        gradient = float(acceleration)
-        constant = (-mag_velocity)-(gradient*t)
-        return gradient,constant
-    
-    def integrate(self,gradient):
-        gradient_integrated = (gradient**2)/2
-        return gradient_integrated
 
 class Graphics:
     def __init__(self) -> None:
@@ -142,8 +129,6 @@ class Graphics:
                 pass
             show = True
         if keys[pygame.K_RETURN]:
-            gradient,constant = c.find_equation(v_velocity,h_velocity,t)
-            gradient_integrated = c.integrate(gradient)
             plot_acceltime(t)
             plot_veloctime(v_velocity,h_velocity,t)
             plot_displtime(t,h_max)
@@ -221,7 +206,6 @@ def plot_displtime(t,h_max):
     h = 2.2*h_max
     a = -(2*h)/(t**2+t**3)
     b = -a*t
-    print(a,b)
     y = a*(x**2)+(b*x)
     plt.xlabel("Time")
     plt.ylabel("Displacement")
