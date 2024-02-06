@@ -1,8 +1,8 @@
 import pygame
 import pygame_gui
 import pygame.freetype
-import math
 import sqlite3
+import random
 
 pygame.init()
 pygame.freetype.init()
@@ -12,10 +12,12 @@ background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
 font = pygame.font.SysFont("Comic Sans MS", 40)
+font2 = pygame.font.SysFont("Comic Sans MS", 20)
 manager = pygame_gui.UIManager((800, 600))
 
 questions = []
 answers = []
+question = "------------"
 
 class Buttons():
     def __init__(self):
@@ -25,6 +27,8 @@ class Buttons():
     def checkpressed(self,button):
         if button == self.quit:
             is_running = False
+        if button == self.start:
+            question = find_question()
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -57,6 +61,23 @@ def load_questiontxt():
         else:
             questions.append(list[i])
 
+def select_randomquestion():
+    range = len(questions)-1
+    question = random.randint(0,range)
+    return question
+
+def find_question():
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    query = ("""
+SELECT Question
+FROM Questions
+WHERE QuestionID = ?
+""")
+    cursor.execute(query,[(select_randomquestion())])
+    question = cursor.fetchall()  
+    return question
+
 def start():
     load_questiontxt()
     load_db()
@@ -74,6 +95,7 @@ def start():
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Questions", True, black, None),(300,75))
+        window_surface.blit(font2.render(question, True, black, None),(150,75))
         pygame.display.update()
     return True
 
