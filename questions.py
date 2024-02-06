@@ -17,6 +17,15 @@ manager = pygame_gui.UIManager((800, 600))
 questions = []
 answers = []
 
+class Buttons():
+    def __init__(self):
+        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 75)),text='Quit',manager=manager)
+        self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Start Questions',manager=manager)
+
+    def checkpressed(self,button):
+        if button == self.quit:
+            is_running = False
+
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
@@ -29,30 +38,24 @@ Answer FLOAT NOT NULL);''')
     cursor.execute('''
 CREATE TABLE IF NOT EXISTS Progress(
 UserID INTEGER PRIMARY KEY,
-QuestionsAnswered INTEGER NOT NULL);''')
+QuestionsAnswered INTEGER NOT NULL,
+CorrectQuestions INTEGER NOT NULL);''')
     db.commit()
-    cursor.execute(f'''
+    for i in range(len(questions)):
+        cursor.execute('''
 INSERT INTO Questions(QuestionID,Question,Answer)
-VALUES(0,{questions[0]},{answers[0]}),
-(1,{questions[1]},{answers[1]}),
-(2,{questions[2]},{answers[2]}),
-(3,{questions[3]},{answers[3]}),
-(4,{questions[4]},{answers[4]}),
-(5,{questions[5]},{answers[5]}),
-(6,{questions[6]},{answers[6]}),
-(7,{questions[7]},{answers[7]});''')
-    db.commit()
+VALUES(?,?,?)
+ON CONFLICT DO NOTHING;''', [(i), (questions[i]), (answers[i])])
+        db.commit()
      
 def load_questiontxt():
     with open("saves/questions.txt") as file:
-        list = file.readlines()
+        list = [line.strip() for line in file.readlines()]
     for i in range(len(list)):
         if i % 2 == 0:
             answers.append(list[i])
-            print(list[i])
         else:
             questions.append(list[i])
-            print(list[i])
 
 def start():
     load_questiontxt()
@@ -64,8 +67,14 @@ def start():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_running = False
+            manager.process_events(event)
+            if event.type == pygame_gui.UI_BUTTON_PRESSED:
+                is_running = b.checkpressed(event.ui_element)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
-        window_surface.blit(font.render("Questions", True, black, None),(150,75))
+        window_surface.blit(font.render("Questions", True, black, None),(300,75))
         pygame.display.update()
+    return True
+
+b = Buttons()

@@ -3,6 +3,7 @@ import pygame_gui
 import projectile_simulator
 import teach
 import settings
+import questions
 import load
 from sys import exit
 
@@ -20,19 +21,22 @@ manager = pygame_gui.UIManager((800, 600))
 class Buttons():
     def __init__(self):
         self.sandbox = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 175), (250, 75)),text='Simulator',manager=manager)
-        self.teaching = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 75)),text='Teaching',manager=manager)
-        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 75)),text='Settings',manager=manager)
-        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Quit',manager=manager)
+        self.questions = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 75)),text='Questions',manager=manager)
+        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 75)),text='Load',manager=manager)
+        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Settings',manager=manager)
+        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 75)),text='Quit',manager=manager)
         self.finished = False
         self.teachfinished = False
 
     def checkpressed(self,button):
-        if button == self.teaching:
-            self.teachfinished = teach.menu()
+        if button == self.questions:
+            self.teachfinished = questions.start()
         if button == self.sandbox:
             self.finished = projectile_simulator.mainloop()
         if button == self.settings:
             self.settingsfinished = settings.menu()
+        if button == self.load:
+            pass
         if button == self.quit:
             pygame.quit()
             exit()
