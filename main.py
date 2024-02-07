@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 import projectile_simulator
-import teach
 import settings
 import questions
 import load
