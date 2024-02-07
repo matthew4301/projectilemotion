@@ -22,11 +22,12 @@ class Buttons():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 75)),text='Quit',manager=manager)
         self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Start Questions',manager=manager)
-
+        self.textinput = pygame_textinput.TextInputVisualizer()
     def checkpressed(self,button):
         if button == self.quit:
             return False
         if button == self.start:
+            window_surface.blit(b.textinput.surface, (10,300))
             return True, find_question()
 
 def load_db():
