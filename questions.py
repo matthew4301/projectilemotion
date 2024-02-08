@@ -55,10 +55,12 @@ class Buttons():
         except AttributeError:
             pass
         if button == self.quit:
-            return False
+            return False, "", ""
         if button == self.start:
             question,correct_button = find_question()
             return True, question, correct_button
+        else:
+            return True, "", ""
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
