@@ -23,15 +23,42 @@ class Buttons():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
         self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Start Questions',manager=manager)
-        self.a = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text='a',manager=manager)
-        self.b = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 300), (250, 50)),text='b',manager=manager)
-        self.c = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text='c',manager=manager)
-        self.d = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text='d',manager=manager)
-    def checkpressed(self,button):
+        
+    def show_choices(self,a,b,c,d):
+        self.a_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text=a,manager=manager)
+        self.b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 300), (250, 50)),text=b,manager=manager)
+        self.c_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text=c,manager=manager)
+        self.d_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text=d,manager=manager)
+
+    def checkpressed(self,button,correct_button):
+        try:
+            if button == self.a_button:
+                if correct_button == "a":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.b_button:
+                if correct_button == "b":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.c_button:
+                if correct_button == "c":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.d_button:
+                if correct_button == "d":
+                    print("correct")
+                else:
+                    print("false")
+        except AttributeError:
+            pass
         if button == self.quit:
             return False
         if button == self.start:
-            return True, find_question()
+            question,correct_button = find_question()
+            return True, question, correct_button
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -64,6 +91,40 @@ def load_questiontxt():
         else:
             answers.append(list[i])
 
+def split_multichoice(id):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT Answer
+FROM Questions
+Where QuestionID = ?;""", [(id)])
+    ans = [*re.sub("[()',]",'',str(cursor.fetchall()))]
+    ans.pop(0)
+    ans.pop(len(ans)-1)
+    return ans
+
+def find_correctans(ans):
+    return ans[0]
+
+def shuffle_ans(ans):
+    random.shuffle(ans)
+    return ans
+
+def show_choices(ans,correct_ans):
+    try:
+        if ans[0] == correct_ans:
+            correct_button = "a"
+        elif ans[1] == correct_ans:
+            correct_button = "b"
+        elif ans[2] == correct_ans:
+            correct_button = "c"
+        elif ans[3] == correct_ans:
+            correct_button = "d"
+        b.show_choices(ans[0],ans[1],ans[2],ans[3])
+        return correct_button
+    except TypeError:
+        pass
+
 def select_randomquestion():
     range = len(questions)-1
     return random.randint(0,range)
@@ -71,19 +132,25 @@ def select_randomquestion():
 def find_question():
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
+    id = select_randomquestion()
     cursor.execute("""
 SELECT Question
 FROM Questions
 WHERE QuestionID = ?;
-""",[(select_randomquestion())])
+""",[(id)])
+    ans = split_multichoice(id)
+    correct_ans = find_correctans(ans)
+    ans = shuffle_ans(ans)
+    correct_button = show_choices(ans,correct_ans)
     question = re.sub("[()',]",'',str(cursor.fetchall()))
-    return question
+    return question,correct_button
 
 def start():
     load_questiontxt()
     load_db()
     clock = pygame.time.Clock()
     is_running = True
+    correct_button = ""
     question = ""
     while is_running:
         time_delta = clock.tick(60)/1000.0
@@ -92,7 +159,7 @@ def start():
                 is_running = False
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                is_running,question = b.checkpressed(event.ui_element)
+                is_running,question,correct_button = b.checkpressed(event.ui_element,correct_button)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
