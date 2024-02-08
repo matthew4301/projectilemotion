@@ -3,6 +3,7 @@ import pygame_gui
 import pygame.freetype
 import sqlite3
 import random
+import re
 
 pygame.init()
 pygame.freetype.init()
@@ -12,7 +13,7 @@ background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
 font = pygame.font.SysFont("Comic Sans MS", 40)
-font2 = pygame.font.SysFont("Comic Sans MS", 15)
+font2 = pygame.font.SysFont("Comic Sans MS", 12)
 manager = pygame_gui.UIManager((800, 600))
 
 questions = []
@@ -20,14 +21,16 @@ answers = []
 
 class Buttons():
     def __init__(self):
-        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 75)),text='Quit',manager=manager)
-        self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Start Questions',manager=manager)
-        self.textinput = pygame_textinput.TextInputVisualizer()
+        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
+        self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Start Questions',manager=manager)
+        self.a = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text='a',manager=manager)
+        self.b = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 300), (250, 50)),text='b',manager=manager)
+        self.c = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text='c',manager=manager)
+        self.d = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text='d',manager=manager)
     def checkpressed(self,button):
         if button == self.quit:
             return False
         if button == self.start:
-            window_surface.blit(b.textinput.surface, (10,300))
             return True, find_question()
 
 def load_db():
@@ -73,9 +76,7 @@ SELECT Question
 FROM Questions
 WHERE QuestionID = ?;
 """,[(select_randomquestion())])
-    question = str(cursor.fetchall())
-    question.replace('[','')
-    question.replace(']','')
+    question = re.sub("[()',]",'',str(cursor.fetchall()))
     return question
 
 def start():
@@ -95,7 +96,7 @@ def start():
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
-        window_surface.blit(font.render("Questions", True, black, None),(300,75))
+        window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
         pygame.display.update()
     return True

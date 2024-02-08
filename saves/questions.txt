@@ -1,30 +1,30 @@
 A particle is moving at a constant acceleration of 3ms-2. At time t = 0, the velocity of the particle is 5ms-1. Find the velocity when t = 10.
-5
+abcd
 A particle is moving at a constant decceleration of 2ms-2. At time t = 0, the velocity of the particle is 15ms-1. Find the velocity when t = 7.
-5
+abcd
 A particle moves from rest at a constant acceleration of 5ms-2. Find the velocity when t = 10.
-5
+abcd
 x    
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
 x
-5
+abcd
