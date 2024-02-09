@@ -68,7 +68,10 @@ def load_db():
     cursor.execute('''
 CREATE TABLE IF NOT EXISTS Questions(
 QuestionID INTEGER PRIMARY KEY,
-Answer TEXT NOT NULL,
+Answer1 TEXT NOT NULL,
+Answer2 TEXT NOT NULL,
+Answer3 TEXT NOT NULL,
+Answer4 TEXT NOT NULL,
 Question FLOAT NOT NULL);''')
     db.commit()
     cursor.execute('''
@@ -77,37 +80,43 @@ UserID INTEGER PRIMARY KEY,
 QuestionsAnswered INTEGER NOT NULL,
 CorrectQuestions INTEGER NOT NULL);''')
     db.commit()
-    for i in range(len(questions)):
+    for i in range(0,5,len(questions)):
         cursor.execute('''
-INSERT INTO Questions(QuestionID,Question,Answer)
-VALUES(?,?,?)
-ON CONFLICT DO NOTHING;''', [(i), (questions[i]), (answers[i])])
+INSERT INTO Questions(QuestionID,Question,Answer1,Answer2,Answer3,Answer4)
+VALUES(?,?,?,?,?,?)
+ON CONFLICT DO NOTHING;''', [(i), (questions[i]), (answers[i]), (answers[i+1]), (answers[i+2]), (answers[i+3])])
         db.commit()
      
 def load_questiontxt():
     with open("saves/questions.txt") as file:
         list = [line.strip() for line in file.readlines()]
     for i in range(len(list)):
-        if i % 2 == 0:
+        if i % 5 == 0:
             questions.append(list[i])
         else:
             answers.append(list[i])
 
-def split_multichoice(id):
+def split_multichoice(ID): # Answer1 is always correct in db
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
     cursor.execute("""
-SELECT Answer
+SELECT Answer1,Answer2,Answer3,Answer4
 FROM Questions
-Where QuestionID = ?;""", [(id)])
+Where QuestionID = ?;""", [(ID)])
     ans = [*re.sub("[()',]",'',str(cursor.fetchall()))]
     ans.pop(0)
     ans.pop(len(ans)-1)
     return ans
 
-def find_correctans(ans):
-    return ans[0]
-
+def find_correctans(ID):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT Answer1
+FROM Questions
+Where QuestionID = ?;""", [(ID)])
+    return str(cursor.fetchall())
+    
 def shuffle_ans(ans):
     random.shuffle(ans)
     return ans
@@ -134,15 +143,17 @@ def select_randomquestion():
 def find_question():
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
-    id = select_randomquestion()
+    ID = select_randomquestion()
+    ans = split_multichoice(ID)
     cursor.execute("""
 SELECT Question
 FROM Questions
 WHERE QuestionID = ?;
-""",[(id)])
-    ans = split_multichoice(id)
-    correct_ans = find_correctans(ans)
+""",[(ID)])
+    correct_ans = find_correctans(ID)
+    print(ans)
     ans = shuffle_ans(ans)
+    print(ans)
     correct_button = show_choices(ans,correct_ans)
     question = re.sub("[()',]",'',str(cursor.fetchall()))
     return question,correct_button
