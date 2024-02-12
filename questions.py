@@ -55,12 +55,12 @@ class Buttons():
         except AttributeError:
             pass
         if button == self.quit:
-            return False, "", ""
+            return False, None, None
         if button == self.start:
             question,correct_button = find_question()
             return True, question, correct_button
         else:
-            return True, "", ""
+            return True, None, None
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -68,11 +68,11 @@ def load_db():
     cursor.execute('''
 CREATE TABLE IF NOT EXISTS Questions(
 QuestionID INTEGER PRIMARY KEY,
-Answer1 TEXT,
-Answer2 TEXT,
-Answer3 TEXT,
-Answer4 TEXT,
-Question FLOAT);''')
+Question VARCHAR(200),
+Answer1 FLOAT,
+Answer2 FLOAT,
+Answer3 FLOAT,
+Answer4 FLOAT);''')
     db.commit()
     cursor.execute('''
 CREATE TABLE IF NOT EXISTS Progress(
@@ -82,24 +82,19 @@ CorrectQuestions INTEGER NOT NULL);''')
     db.commit()
     for i in range(len(questions)): 
         cursor.execute('''
-INSERT INTO Questions(QuestionID,Question)
-VALUES(?,?)
-ON CONFLICT DO NOTHING;''', [(i), (questions[i])])
-        print((i), (questions[i]))
-    db.commit()
+INSERT OR REPLACE INTO Questions(QuestionID,Question)
+VALUES(?,?);''', [(i), (questions[i])])
+        db.commit()
     n = 0
     m = 0
     while n < len(answers):
         cursor.execute('''
-INSERT INTO Questions(QuestionID,Answer1,Answer2,Answer3,Answer4)
-VALUES(?,?,?,?,?)
-ON CONFLICT DO NOTHING;''', [(m), (answers[n]), (answers[n+1]), (answers[n+2]), (answers[n+3])])
-        print((m), (answers[n]), (answers[n+1]), (answers[n+2]), (answers[n+3]))
+INSERT OR REPLACE INTO Questions(QuestionID,Answer1,Answer2,Answer3,Answer4)
+VALUES(?,?,?,?,?);''', [(m), (answers[n]), (answers[n+1]), (answers[n+2]), (answers[n+3])])
+        db.commit()
         m+=1
         n+=4
-    db.commit()
         
-     
 def load_questiontxt():
     with open("saves/questions.txt") as file:
         list = [line.strip() for line in file.readlines()]
@@ -113,21 +108,15 @@ def load_answerstxt():
         answers.append(list[i])
 
 def split_multichoice(ID): # Answer1 is always correct in db
+    ans = []
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
-    while True:
-        cursor.execute("""
-    SELECT Answer1,Answer2,Answer3,Answer4
+    for i in range(1,5):
+        cursor.execute(f"""
+    SELECT Answer{i}
     FROM Questions
-    Where QuestionID = ?;""", [(ID)])
-        ans = [*re.sub("[()',]",'',str(cursor.fetchall()))]
-        print(ans,ID)
-        ans.pop(0)
-        ans.pop(len(ans)-1)
-        if ans == "[]":
-            ID = select_randomquestion()
-        else:
-            break
+    WHERE QuestionID = ?;""", [(ID)])
+        ans.append(re.sub("['',()]","",str(cursor.fetchone())))
     return ans
 
 def find_correctans(ID):
@@ -137,8 +126,7 @@ def find_correctans(ID):
 SELECT Answer1
 FROM Questions
 Where QuestionID = ?;""", [(ID)])
-    print(str(cursor.fetchall()))
-    return str(cursor.fetchall())
+    return str(cursor.fetchone())
     
 def shuffle_ans(ans):
     random.shuffle(ans)
@@ -154,6 +142,8 @@ def show_choices(ans,correct_ans):
             correct_button = "c"
         elif ans[3] == correct_ans:
             correct_button = "d"
+        else:
+            correct_button = None # error
         b.show_choices(ans[0],ans[1],ans[2],ans[3])
         return correct_button
     except TypeError:
@@ -174,11 +164,9 @@ FROM Questions
 WHERE QuestionID = ?;
 """,[(ID)])
     correct_ans = find_correctans(ID)
-    print(ans)
     ans = shuffle_ans(ans)
-    print(ans)
     correct_button = show_choices(ans,correct_ans)
-    question = re.sub("[()',]",'',str(cursor.fetchall()))
+    question = re.sub("[()',]",'',str(cursor.fetchone()))
     return question,correct_button
 
 def start():
