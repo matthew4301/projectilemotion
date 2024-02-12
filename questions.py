@@ -13,7 +13,7 @@ background = pygame.Surface((800, 600))
 background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
 font = pygame.font.SysFont("Comic Sans MS", 40)
-font2 = pygame.font.SysFont("Comic Sans MS", 12)
+font2 = pygame.font.SysFont("Comic Sans MS", 13)
 manager = pygame_gui.UIManager((800, 600))
 
 questions = []
@@ -31,35 +31,36 @@ class Buttons():
         self.d_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text=d,manager=manager)
 
     def check_correctbutton_pressed(self,button,correct_button):
-        if button == self.a_button:
-            if correct_button == "a":
-                print("correct")
-            else:
-                print("false")
-        if button == self.b_button:
-            if correct_button == "b":
-                print("correct")
-            else:
-                print("false")
-        if button == self.c_button:
-            if correct_button == "c":
-                print("correct")
-            else:
-                print("false")
-        if button == self.d_button:
-            if correct_button == "d":
-                print("correct")
-            else:
-                print("false")
+        try:
+            if button == self.a_button:
+                if correct_button == "a":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.b_button:
+                if correct_button == "b":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.c_button:
+                if correct_button == "c":
+                    print("correct")
+                else:
+                    print("false")
+            if button == self.d_button:
+                if correct_button == "d":
+                    print("correct")
+                else:
+                    print("false")
+        except AttributeError:
+            pass # choices not shown yet
 
-    def check_button_pressed(self,button):
+    def check_button_pressed(self,button,question,correct_button):
         if button == self.start:
             question,correct_button = find_question()
-            print(question)
-            return True, question, correct_button
+            return question, correct_button
         else:
-            return True, None, None
-
+            return question,correct_button
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -67,7 +68,7 @@ def load_db():
     cursor.execute('''
 CREATE TABLE IF NOT EXISTS Questions(
 QuestionID INTEGER PRIMARY KEY,
-Question VARCHAR(200),
+Question TEXT,
 Answer1 FLOAT,
 Answer2 FLOAT,
 Answer3 FLOAT,
@@ -79,17 +80,12 @@ UserID INTEGER PRIMARY KEY,
 QuestionsAnswered INTEGER NOT NULL,
 CorrectQuestions INTEGER NOT NULL);''')
     db.commit()
-    for i in range(len(questions)): 
-        cursor.execute('''
-INSERT OR REPLACE INTO Questions(QuestionID,Question)
-VALUES(?,?);''', [(i), (questions[i])])
-        db.commit()
     n = 0
     m = 0
-    while n < len(answers):
+    while m < len(questions):
         cursor.execute('''
-INSERT OR REPLACE INTO Questions(QuestionID,Answer1,Answer2,Answer3,Answer4)
-VALUES(?,?,?,?,?);''', [(m), (answers[n]), (answers[n+1]), (answers[n+2]), (answers[n+3])])
+INSERT OR REPLACE INTO Questions(QuestionID,Question,Answer1,Answer2,Answer3,Answer4)
+VALUES(?,?,?,?,?,?);''', [(m), (questions[m]), (answers[n]), (answers[n+1]), (answers[n+2]), (answers[n+3])])
         db.commit()
         m+=1
         n+=4
@@ -183,7 +179,7 @@ def start():
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 b.check_correctbutton_pressed(event.ui_element,correct_button)
-                b.check_button_pressed(event.ui_element)
+                question, correct_button = b.check_button_pressed(event.ui_element,question,correct_button)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
