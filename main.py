@@ -6,6 +6,10 @@ import questions
 import load
 from sys import exit
 
+questions.load_questiontxt()
+questions.load_answerstxt()
+questions.load_db()
+
 pygame.init()
 pygame.freetype.init()
 pygame.display.set_caption('Projectile Motion Simulator')

@@ -30,37 +30,36 @@ class Buttons():
         self.c_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text=c,manager=manager)
         self.d_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text=d,manager=manager)
 
-    def checkpressed(self,button,correct_button):
-        try:
-            if button == self.a_button:
-                if correct_button == "a":
-                    print("correct")
-                else:
-                    print("false")
-            if button == self.b_button:
-                if correct_button == "b":
-                    print("correct")
-                else:
-                    print("false")
-            if button == self.c_button:
-                if correct_button == "c":
-                    print("correct")
-                else:
-                    print("false")
-            if button == self.d_button:
-                if correct_button == "d":
-                    print("correct")
-                else:
-                    print("false")
-        except AttributeError:
-            pass
-        if button == self.quit:
-            return False, None, None
+    def check_correctbutton_pressed(self,button,correct_button):
+        if button == self.a_button:
+            if correct_button == "a":
+                print("correct")
+            else:
+                print("false")
+        if button == self.b_button:
+            if correct_button == "b":
+                print("correct")
+            else:
+                print("false")
+        if button == self.c_button:
+            if correct_button == "c":
+                print("correct")
+            else:
+                print("false")
+        if button == self.d_button:
+            if correct_button == "d":
+                print("correct")
+            else:
+                print("false")
+
+    def check_button_pressed(self,button):
         if button == self.start:
             question,correct_button = find_question()
+            print(question)
             return True, question, correct_button
         else:
             return True, None, None
+
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -126,9 +125,10 @@ def find_correctans(ID):
 SELECT Answer1
 FROM Questions
 Where QuestionID = ?;""", [(ID)])
-    return str(cursor.fetchone())
+    result = str(cursor.fetchone())
+    return result
     
-def shuffle_ans(ans):
+def shuffle_ans(ans): # fisher-yates shuffle
     random.shuffle(ans)
     return ans
 
@@ -163,16 +163,14 @@ SELECT Question
 FROM Questions
 WHERE QuestionID = ?;
 """,[(ID)])
+    question = str(cursor.fetchone())
     correct_ans = find_correctans(ID)
     ans = shuffle_ans(ans)
     correct_button = show_choices(ans,correct_ans)
-    question = re.sub("[()',]",'',str(cursor.fetchone()))
+    question = re.sub("[()',]",'',question)
     return question,correct_button
 
 def start():
-    load_questiontxt()
-    load_answerstxt()
-    load_db()
     clock = pygame.time.Clock()
     is_running = True
     correct_button = ""
@@ -184,7 +182,8 @@ def start():
                 is_running = False
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                is_running,question,correct_button = b.checkpressed(event.ui_element,correct_button)
+                b.check_correctbutton_pressed(event.ui_element,correct_button)
+                b.check_button_pressed(event.ui_element)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
