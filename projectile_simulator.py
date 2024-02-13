@@ -204,7 +204,7 @@ def plot_displtime(t,h_max):
     f.set_figheight(6)
     x = plb.arange(0,t*2,0.01)
     h = 2.2*h_max
-    a = -(2*h)/(t**2+t**3)
+    a = -(2*h)/(t**2+t**3) # need to check for zero division error
     b = -a*t
     y = a*(x**2)+(b*x)
     plt.xlabel("Time")

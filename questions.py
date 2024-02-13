@@ -61,7 +61,7 @@ class Buttons():
             question,correct_button = find_question()
             return question, correct_button
         else:
-            return question,correct_button
+            return question,correct_button # quit button does not work
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
