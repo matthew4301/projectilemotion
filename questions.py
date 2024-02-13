@@ -125,7 +125,10 @@ Where QuestionID = ?;""", [(ID)])
     return result
     
 def shuffle_ans(ans): # fisher-yates shuffle
-    random.shuffle(ans)
+    n = len(ans)
+    for i in range(n-2):
+        j = random.randint(0,i) # O(1)
+        ans[i], ans[j] = ans[j], ans[i]
     return ans
 
 def show_choices(ans,correct_ans):
