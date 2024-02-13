@@ -103,6 +103,38 @@ def load_answerstxt():
     for i in range(len(list)):
         answers.append(list[i])
 
+def assign_userid():
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+
+def update_questionsanswered(uID):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute(f"""
+SELECT QuestionsAnswered
+FROM Progress
+WHERE UserID = ?;""", [(uID)])
+    answered = re.sub("['',()]", "", str(cursor.fetchone()))
+    answered+=1
+    cursor.execute(f"""
+INSERT OR REPLACE INTO Progress(UserID, QuestionsAnswered)
+VALUES(?,?);""", [(uID),(answered)])
+    db.commit()
+
+def update_score(uID):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute(f"""
+SELECT CorrectQuestions
+FROM Progress
+WHERE UserID = ?;""", [(uID)])
+    score = re.sub("['',()]", "", str(cursor.fetchone()))
+    score+=1
+    cursor.execute(f"""
+INSERT OR REPLACE INTO Progress(UserID, CorrectQuestions)
+VALUES(?,?);""", [(uID),(score)])
+    db.commit()
+
 def split_multichoice(ID): # Answer1 is always correct in db
     ans = []
     with sqlite3.connect("saves/database.db") as db:
