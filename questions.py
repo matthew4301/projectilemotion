@@ -32,6 +32,7 @@ class Buttons():
 
     def check_correctbutton_pressed(self,button,correct_button):
         try:
+            print(correct_button)
             if button == self.a_button:
                 if correct_button == "a":
                     print("correct")
@@ -121,13 +122,13 @@ def find_correctans(ID):
 SELECT Answer1
 FROM Questions
 Where QuestionID = ?;""", [(ID)])
-    result = str(cursor.fetchone())
+    result = re.sub("[()',]","",str(cursor.fetchone()))
     return result
     
-def shuffle_ans(ans): # fisher-yates shuffle
+def shuffle_ans(ans): # fisher-yates shuffle O(n)
     n = len(ans)
     for i in range(n-2):
-        j = random.randint(0,i) # O(1)
+        j = random.randint(0,i)
         ans[i], ans[j] = ans[j], ans[i]
     return ans
 
@@ -175,7 +176,7 @@ def start():
     correct_button = ""
     question = ""
     while is_running:
-        time_delta = clock.tick(60)/1000.0
+        time_delta = clock.tick(10)/1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 is_running = False
