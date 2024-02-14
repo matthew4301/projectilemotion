@@ -3,7 +3,6 @@ import pygame_gui
 import projectile_simulator
 import settings
 import questions
-import load
 from sys import exit
 
 questions.load_questiontxt()
@@ -25,9 +24,8 @@ class Buttons():
     def __init__(self):
         self.sandbox = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 175), (250, 75)),text='Simulator',manager=manager)
         self.questions = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 75)),text='Questions',manager=manager)
-        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 75)),text='Load',manager=manager)
-        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Settings',manager=manager)
-        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 75)),text='Quit',manager=manager)
+        self.settings = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 325), (250, 75)),text='Settings',manager=manager)
+        self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 75)),text='Quit',manager=manager)
         self.finished = False
         self.teachfinished = False
 
@@ -38,8 +36,6 @@ class Buttons():
             self.finished = projectile_simulator.mainloop()
         if button == self.settings:
             self.settingsfinished = settings.menu()
-        if button == self.load:
-            pass
         if button == self.quit:
             pygame.quit()
             exit()

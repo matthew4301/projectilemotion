@@ -23,7 +23,9 @@ class Buttons():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
         self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Start Questions',manager=manager)
-        
+        self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 525), (250, 50)),text='Save Progress',manager=manager)
+        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 475), (250, 50)),text='Load Progress',manager=manager)
+
     def show_choices(self,a,b,c,d):
         self.a_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text=a,manager=manager)
         self.b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 300), (250, 50)),text=b,manager=manager)
@@ -229,9 +231,9 @@ def start():
         window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
         if correct_selectedbutton == True:
-            window_surface.blit(font2.render("Correct", True, black, None),(275,200))
+            window_surface.blit(font2.render("Correct", True, black, None),(375,200))
         if correct_selectedbutton == False:
-            window_surface.blit(font2.render("Incorrect", True, black, None),(275,200))
+            window_surface.blit(font2.render("Incorrect", True, black, None),(375,200))
         pygame.display.update()
     return True
 
