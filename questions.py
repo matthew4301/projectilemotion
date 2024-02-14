@@ -62,6 +62,11 @@ class Buttons():
             return question, correct_button
         else:
             return question,correct_button
+    
+    def check_quitbutton(self,button,is_running):
+        if button == self.quit:
+            is_running = False
+        return is_running
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -217,6 +222,7 @@ def start():
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 correct_selectedbutton = b.check_correctbutton_pressed(event.ui_element,correct_button,correct_selectedbutton)
                 question, correct_button = b.check_button_pressed(event.ui_element,question,correct_button)
+                is_running = b.check_quitbutton(event.ui_element,is_running)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
