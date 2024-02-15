@@ -22,9 +22,8 @@ answers = []
 class Buttons():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
-        self.start = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Start Questions',manager=manager)
-        self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 525), (250, 50)),text='Save Progress',manager=manager)
-        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 475), (250, 50)),text='Load Progress',manager=manager)
+        self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Save Progress',manager=manager)
+        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 500), (250, 75)),text='Load Progress',manager=manager)
 
     def show_choices(self,a,b,c,d):
         self.a_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text=a,manager=manager)
@@ -57,13 +56,6 @@ class Buttons():
         except AttributeError:
             pass # choices not shown yet
         return correct_selectedbutton
-
-    def check_button_pressed(self,button,question,correct_button):
-        if button == self.start:
-            question,correct_button = find_question()
-            return question, correct_button
-        else:
-            return question,correct_button
     
     def check_quitbutton(self,button,is_running):
         if button == self.quit:
@@ -215,6 +207,7 @@ def start():
     correct_button = ""
     question = ""
     correct_selectedbutton = None
+    question,correct_button = find_question()
     while is_running:
         time_delta = clock.tick(10)/1000.0
         for event in pygame.event.get():
@@ -223,7 +216,6 @@ def start():
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 correct_selectedbutton = b.check_correctbutton_pressed(event.ui_element,correct_button,correct_selectedbutton)
-                question, correct_button = b.check_button_pressed(event.ui_element,question,correct_button)
                 is_running = b.check_quitbutton(event.ui_element,is_running)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))

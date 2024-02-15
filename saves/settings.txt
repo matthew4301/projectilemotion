@@ -1,5 +1,5 @@
 Imperial
-M
+IN
 Ball
 9.81
 25
