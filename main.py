@@ -3,11 +3,13 @@ import pygame_gui
 import projectile_simulator
 import settings
 import questions
+import load
 from sys import exit
 
 questions.load_questiontxt()
 questions.load_answerstxt()
 questions.load_db()
+load.load_db()
 
 pygame.init()
 pygame.freetype.init()

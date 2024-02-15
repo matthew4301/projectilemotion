@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 import sqlite3
+import re
 
 pygame.freetype.init()
 window_surface = pygame.display.set_mode((800, 600))
@@ -9,7 +10,7 @@ background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
 manager = pygame_gui.UIManager((800, 600))
 
-class Buttons():
+class Buttons(): # https://www.geeksforgeeks.org/how-to-create-a-text-input-box-with-pygame/
     def __init__(self) -> None:
         self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Main Menu',manager=manager)
 
@@ -38,16 +39,35 @@ def menu():
         pygame.display.update()
     return True
 
-def run():
+def load_db():
 	with sqlite3.connect("saves/database.db") as db:
 		cursor = db.cursor()
 	cursor.execute('''
 CREATE TABLE IF NOT EXISTS users(
 userID INTEGER PRIMARY KEY,
-username VARCHAR(20) NOT NULL,
-firstname VARCHAR(20) NOT NULL,
-surname VARCHAR(20) NOT NULL,
-password VARCHAR(20) NOT NULL);''')
+username TEXT,
+password TEXT);''')
 	db.commit()
+     
+def get_usernamepassword(usernames,passwords):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT count(*)
+FROM users;""")
+    result = cursor.fetchall()
+    n = result[0][0]
+    for i in range(n):
+        cursor.execute("""
+SELECT username
+FROM users
+WHERE userID = ?;""", [(i)])
+        usernames.append(re.sub("['',()]", "", str(cursor.fetchone())))
+        cursor.execute("""
+SELECT password
+FROM users
+WHERE userID = ?;""", [i])
+        passwords.append(re.sub("['',()]", "", str(cursor.fetchone())))
+    return usernames,passwords
      
 b = Buttons()

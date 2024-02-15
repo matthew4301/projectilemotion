@@ -31,31 +31,39 @@ class Buttons():
         self.c_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text=c,manager=manager)
         self.d_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text=d,manager=manager)
 
-    def check_correctbutton_pressed(self,button,correct_button,correct_selectedbutton):
+    def check_correctbutton_pressed(self,button,correct_button,correct_selectedbutton,questions_answered,correct_answers):
         try:
             if button == self.a_button:
                 if correct_button == "a":
+                    correct_answers+=1
                     correct_selectedbutton = True
                 else:
-                    correct_selectedbutton = False
+                    correct_selectedbutton = False#
+                questions_answered+=1
             if button == self.b_button:
                 if correct_button == "b":
+                    correct_answers+=1
                     correct_selectedbutton = True
                 else:
                     correct_selectedbutton = False
+                questions_answered+=1
             if button == self.c_button:
                 if correct_button == "c":
+                    correct_answers+=1
                     correct_selectedbutton = True
                 else:
                     correct_selectedbutton = False
+                questions_answered+=1
             if button == self.d_button:
                 if correct_button == "d":
+                    correct_answers+=1
                     correct_selectedbutton = True
                 else:
                     correct_selectedbutton = False
+                questions_answered+=1
         except AttributeError:
-            pass # choices not shown yet
-        return correct_selectedbutton
+            print("AttributeError") # choices not shown yet
+        return correct_selectedbutton,questions_answered,correct_answers
     
     def check_quitbutton(self,button,is_running):
         if button == self.quit:
@@ -207,6 +215,8 @@ def start():
     correct_button = ""
     question = ""
     correct_selectedbutton = None
+    correct_answers = 0
+    questions_answered = 0
     question,correct_button = find_question()
     while is_running:
         time_delta = clock.tick(10)/1000.0
@@ -215,7 +225,7 @@ def start():
                 is_running = False
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                correct_selectedbutton = b.check_correctbutton_pressed(event.ui_element,correct_button,correct_selectedbutton)
+                correct_selectedbutton = b.check_correctbutton_pressed(event.ui_element,correct_button,correct_selectedbutton,questions_answered,correct_answers)
                 is_running = b.check_quitbutton(event.ui_element,is_running)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
