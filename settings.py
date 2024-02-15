@@ -10,26 +10,22 @@ manager = pygame_gui.UIManager((800, 600))
 
 class Save:
     def __init__(self) -> None:
-        self.units_type = "Metric" 
         self.units = "M"
-        self.object = "Ball"
         self.acceleration = 9.81
         self.scale = 25
 
     def save(self): # order: type, units, object, accel, scale
         file = open("saves/settings.txt", "w")
-        file.write(f"{self.units_type}\n{self.units}\n{self.object}\n{self.acceleration}\n{self.scale}")
+        file.write(f"{self.units}\n{self.acceleration}\n{self.scale}")
         file.close()
 
     def load(self):
         try:
             with open("saves/settings.txt") as f:
                 settings_list = f.read().splitlines()
-            self.units_type = settings_list[0]
-            self.units = settings_list[1]
-            self.object = settings_list[2]
-            self.acceleration = settings_list[3]
-            self.scale = settings_list[4]
+            self.units = settings_list[0]
+            self.acceleration = settings_list[1]
+            self.scale = settings_list[2]
         except IndexError:
             pass            
 

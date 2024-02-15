@@ -22,7 +22,6 @@ fps = 10
 # default settings state
 units_type = "Metric"
 units = "M"
-object = "Ball"
 acceleration = 9.81
 scale = 25
 
@@ -151,11 +150,9 @@ def load_settings():
     try:
         with open("saves/settings.txt") as f:
             settings_list = f.read().splitlines()
-        units_type = settings_list[0]
-        units = settings_list[1]
-        object = settings_list[2]
-        acceleration = float(settings_list[3])
-        scale = int(settings_list[4])
+        units = settings_list[0]
+        acceleration = float(settings_list[1])
+        scale = int(settings_list[2])
     except IndexError:
         pass
     return units_type,units,object,acceleration,scale
