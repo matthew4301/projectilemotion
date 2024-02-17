@@ -31,7 +31,7 @@ class Inputs():
             is_running = False
         return is_running
     
-    def check_keyboard(self,correct_button,button_selected,correct_selectedbutton):
+    def check_keyboard(self,correct_button,button_selected,correct_selectedbutton,correct_questions,questions_answered):
        keys = pygame.key.get_pressed()
        if keys[pygame.K_1]:
            button_selected = 1
@@ -43,9 +43,12 @@ class Inputs():
            button_selected = 4
        if button_selected == correct_button:
            correct_selectedbutton = True
+           correct_questions+=1
+           questions_answered+=1
        if (keys[pygame.K_1] or keys[pygame.K_2] or keys[pygame.K_3] or keys[pygame.K_4]) and button_selected != correct_button:
            correct_selectedbutton = False
-       return correct_selectedbutton
+           questions_answered+=1
+       return correct_selectedbutton,correct_questions,questions_answered
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -91,32 +94,20 @@ def assign_userid():
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
 
-def update_questionsanswered(uID):
+def update_questionsanswered(uID,answered):
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
-    cursor.execute(f"""
-SELECT QuestionsAnswered
-FROM Progress
-WHERE UserID = ?;""", [(uID)])
-    answered = re.sub("['',()]", "", str(cursor.fetchone()))
-    answered+=1
     cursor.execute(f"""
 INSERT OR REPLACE INTO Progress(UserID, QuestionsAnswered)
 VALUES(?,?);""", [(uID),(answered)])
     db.commit()
 
-def update_score(uID):
+def update_correctquestions(uID,correct_questions):
     with sqlite3.connect("saves/database.db") as db:
         cursor = db.cursor()
     cursor.execute(f"""
-SELECT CorrectQuestions
-FROM Progress
-WHERE UserID = ?;""", [(uID)])
-    score = re.sub("['',()]", "", str(cursor.fetchone()))
-    score+=1
-    cursor.execute(f"""
 INSERT OR REPLACE INTO Progress(UserID, CorrectQuestions)
-VALUES(?,?);""", [(uID),(score)])
+VALUES(?,?);""", [(uID),(correct_questions)])
     db.commit()
 
 def split_multichoice(ID): # Answer1 is always correct in db
@@ -193,7 +184,7 @@ def start():
     question = ""
     button_selected = None
     correct_selectedbutton = None
-    correct_answers = 0
+    correct_questions = 0
     questions_answered = 0
     question,correct_button,a,b,c,d = find_question()
     while is_running:
@@ -204,16 +195,16 @@ def start():
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 is_running = i.check_button(event.ui_element,is_running)
-        correct_selectedbutton = i.check_keyboard(correct_button,button_selected,correct_selectedbutton)
+        correct_selectedbutton,correct_questions,questions_answered = i.check_keyboard(correct_button,button_selected,correct_selectedbutton,correct_questions,questions_answered)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
-        window_surface.blit(font3.render(f"1 - {a}", True, black, None),(375,250))
-        window_surface.blit(font3.render(f"2 - {b}", True, black, None),(375,300))
-        window_surface.blit(font3.render(f"3 - {c}", True, black, None),(375,350))
-        window_surface.blit(font3.render(f"4 - {d}", True, black, None),(375,400))
+        window_surface.blit(font.render(f"1 - {a}", True, black, None),(375,250))
+        window_surface.blit(font.render(f"2 - {b}", True, black, None),(375,300))
+        window_surface.blit(font.render(f"3 - {c}", True, black, None),(375,350))
+        window_surface.blit(font.render(f"4 - {d}", True, black, None),(375,400))
         if correct_selectedbutton == True:
             window_surface.blit(font2.render("Correct", True, black, None),(375,200))
             correct_selectedbutton = None
