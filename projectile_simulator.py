@@ -57,6 +57,8 @@ class Calculations:
             t = t2
         if t2 < 0:
             t = t1
+        if t == 0:
+            print("Zero error")
         return t*2
 
 class Graphics:
