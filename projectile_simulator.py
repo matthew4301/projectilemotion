@@ -242,7 +242,6 @@ def mainloop():
         manager.draw_ui(window)
         pygame.display.update()
         clock.tick(fps)
-    return True
 
 g = Graphics()
 c = Calculations()

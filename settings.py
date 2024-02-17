@@ -90,7 +90,6 @@ def menu():
         window_surface.blit(font2.render(f"Graph Scale - {scale}", True, black, None),(475,325))
         window_surface.blit(font2.render(f"Acceleration - {acceleration}", True, black, None),(475,125))
         pygame.display.update()
-    return True
 
 b = Buttons()
 s = Save()

@@ -14,61 +14,38 @@ background.fill(pygame.Color('#787878'))
 black = (0, 0, 0)
 font = pygame.font.SysFont("Comic Sans MS", 40)
 font2 = pygame.font.SysFont("Comic Sans MS", 13)
+font3 = pygame.font.SysFont("Comic Sans MS", 30)
 manager = pygame_gui.UIManager((800, 600))
 
 questions = []
 answers = []
 
-class Buttons():
+class Inputs():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
         self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Save Progress',manager=manager)
         self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 500), (250, 75)),text='Load Progress',manager=manager)
-
-    def show_choices(self,a,b,c,d):
-        self.a_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 250), (250, 50)),text=a,manager=manager)
-        self.b_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 300), (250, 50)),text=b,manager=manager)
-        self.c_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 350), (250, 50)),text=c,manager=manager)
-        self.d_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 400), (250, 50)),text=d,manager=manager)
-
-    def check_correctbutton_pressed(self,button,correct_button,correct_selectedbutton,questions_answered,correct_answers):
-        try:
-            if button == self.a_button:
-                if correct_button == "a":
-                    correct_answers+=1
-                    correct_selectedbutton = True
-                else:
-                    correct_selectedbutton = False
-                questions_answered+=1
-            if button == self.b_button:
-                if correct_button == "b":
-                    correct_answers+=1
-                    correct_selectedbutton = True
-                else:
-                    correct_selectedbutton = False
-                questions_answered+=1
-            if button == self.c_button:
-                if correct_button == "c":
-                    correct_answers+=1
-                    correct_selectedbutton = True
-                else:
-                    correct_selectedbutton = False
-                questions_answered+=1
-            if button == self.d_button:
-                if correct_button == "d":
-                    correct_answers+=1
-                    correct_selectedbutton = True
-                else:
-                    correct_selectedbutton = False
-                questions_answered+=1
-        except AttributeError:
-            print("AttributeError") # choices not shown yet
-        return correct_selectedbutton,questions_answered,correct_answers
     
-    def check_quitbutton(self,button,is_running):
+    def check_button(self,button,is_running):
         if button == self.quit:
             is_running = False
         return is_running
+    
+    def check_keyboard(self,correct_button,button_selected,correct_selectedbutton):
+       keys = pygame.key.get_pressed()
+       if keys[pygame.K_1]:
+           button_selected = 1
+       if keys[pygame.K_2]:
+           button_selected = 2
+       if keys[pygame.K_3]:
+           button_selected = 3
+       if keys[pygame.K_4]:
+           button_selected = 4
+       if button_selected == correct_button:
+           correct_selectedbutton = True
+       if (keys[pygame.K_1] or keys[pygame.K_2] or keys[pygame.K_3] or keys[pygame.K_4]) and button_selected != correct_button:
+           correct_selectedbutton = False
+       return correct_selectedbutton
 
 def load_db():
     with sqlite3.connect("saves/database.db") as db:
@@ -171,23 +148,6 @@ def shuffle_ans(ans): # fisher-yates shuffle O(n)
         ans[i], ans[j] = ans[j], ans[i]
     return ans
 
-def show_choices(ans,correct_ans):
-    try:
-        if ans[0] == correct_ans:
-            correct_button = "a"
-        elif ans[1] == correct_ans:
-            correct_button = "b"
-        elif ans[2] == correct_ans:
-            correct_button = "c"
-        elif ans[3] == correct_ans:
-            correct_button = "d"
-        else:
-            correct_button = None # error
-        b.show_choices(ans[0],ans[1],ans[2],ans[3])
-        return correct_button
-    except TypeError:
-        pass
-
 def select_randomquestion():
     range = len(questions)-1
     return random.randint(0,range)
@@ -205,19 +165,37 @@ WHERE QuestionID = ?;
     question = str(cursor.fetchone())
     correct_ans = find_correctans(ID)
     ans = shuffle_ans(ans)
-    correct_button = show_choices(ans,correct_ans)
+    try:
+        if ans[0] == correct_ans:
+            correct_button = 1
+        elif ans[1] == correct_ans:
+            correct_button = 2
+        elif ans[2] == correct_ans:
+            correct_button = 3
+        elif ans[3] == correct_ans:
+            correct_button = 4
+        else:
+            correct_button = None # error
+    except TypeError:
+        pass
+    a = ans[0]
+    b = ans[1]
+    c = ans[2]
+    d = ans[3]
     question = re.sub("[()',]",'',question)
-    return question,correct_button
+    return question,correct_button,a,b,c,d
 
 def start():
     clock = pygame.time.Clock()
+    window_surface.blit(background, (0, 0))
     is_running = True
     correct_button = ""
     question = ""
+    button_selected = None
     correct_selectedbutton = None
     correct_answers = 0
     questions_answered = 0
-    question,correct_button = find_question()
+    question,correct_button,a,b,c,d = find_question()
     while is_running:
         time_delta = clock.tick(10)/1000.0
         for event in pygame.event.get():
@@ -225,18 +203,25 @@ def start():
                 is_running = False
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                correct_selectedbutton,questions_answered,correct_answers = b.check_correctbutton_pressed(event.ui_element,correct_button,correct_selectedbutton,questions_answered,correct_answers)
-                is_running = b.check_quitbutton(event.ui_element,is_running)
+                is_running = i.check_button(event.ui_element,is_running)
+        correct_selectedbutton = i.check_keyboard(correct_button,button_selected,correct_selectedbutton)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
+        window_surface.blit(font3.render(f"1 - {a}", True, black, None),(375,250))
+        window_surface.blit(font3.render(f"2 - {b}", True, black, None),(375,300))
+        window_surface.blit(font3.render(f"3 - {c}", True, black, None),(375,350))
+        window_surface.blit(font3.render(f"4 - {d}", True, black, None),(375,400))
         if correct_selectedbutton == True:
             window_surface.blit(font2.render("Correct", True, black, None),(375,200))
+            correct_selectedbutton = None
+            question,correct_button,a,b,c,d = find_question()
         if correct_selectedbutton == False:
             window_surface.blit(font2.render("Incorrect", True, black, None),(375,200))
+            correct_selectedbutton = None
+            question,correct_button,a,b,c,d = find_question()
         pygame.display.update()
-    return True
 
-b = Buttons()
+i = Inputs()

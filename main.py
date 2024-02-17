@@ -33,11 +33,11 @@ class Buttons():
 
     def checkpressed(self,button):
         if button == self.questions:
-            self.teachfinished = questions.start()
+            questions.start()
         if button == self.sandbox:
-            self.finished = projectile_simulator.mainloop()
+            projectile_simulator.mainloop()
         if button == self.settings:
-            self.settingsfinished = settings.menu()
+            settings.menu()
         if button == self.quit:
             pygame.quit()
             exit()
@@ -54,12 +54,6 @@ while is_running:
         if event.type == pygame_gui.UI_BUTTON_PRESSED:
             b.checkpressed(event.ui_element)
         manager.process_events(event)
-    if b.finished == True:
-        pygame.init()
-        b.finished = False
-    if b.teachfinished == True:
-        pygame.init()
-        b.teachfinished = False
     manager.update(time_delta)
     window_surface.blit(background, (0, 0))
     manager.draw_ui(window_surface)
