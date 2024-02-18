@@ -4,6 +4,8 @@ import pygame.freetype
 import sqlite3
 import random
 import re
+import save
+import load
 
 pygame.init()
 pygame.freetype.init()
@@ -29,6 +31,10 @@ class Inputs():
     def check_button(self,button,is_running):
         if button == self.quit:
             is_running = False
+        if button == self.save:
+            save.menu()
+        if button == self.load:
+            load.menu()
         return is_running
     
     def check_keyboard(self,correct_button,button_selected,correct_selectedbutton,correct_questions,questions_answered):
@@ -89,10 +95,6 @@ def load_answerstxt():
         list = [line.strip() for line in file.readlines()]
     for i in range(len(list)):
         answers.append(list[i])
-
-def assign_userid():
-    with sqlite3.connect("saves/database.db") as db:
-        cursor = db.cursor()
 
 def update_questionsanswered(uID,answered):
     with sqlite3.connect("saves/database.db") as db:

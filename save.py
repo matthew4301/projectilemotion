@@ -12,7 +12,7 @@ manager = pygame_gui.UIManager((800, 600))
 
 class Buttons(): # https://www.geeksforgeeks.org/how-to-create-a-text-input-box-with-pygame/
     def __init__(self) -> None:
-        self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 375), (250, 50)),text='Main Menu',manager=manager)
+        self.mainmenu = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 475), (250, 50)),text='Back',manager=manager)
 
     def checkpressed(self,button):
 
