@@ -1,3 +1,15 @@
-A particle moves at a constant acceleration of 3ms-2. At time 0, the velocity is 5ms-1. Find the velocity when t = 10.
-A particle moves at a constant decceleration of 2ms-2. At time 0, the velocity is 15ms-1. Find the velocity when t = 7.
-A particle moves from rest at a constant acceleration of 5ms-2. Find the velocity when t = 10.
+A particle moves at a acceleration of 3ms-2. At time 0, the velocity is 5ms-1. Find the velocity when t = 10.
+A particle moves at a acceleration of 7ms-2. At time 10, the velocity is 5ms-1. Find the velocity when t = 0.
+A car moves at a decceleration of 15ms-2. If it starts decelerating at 30ms-1, find the distance required to stop.
+A car moves at a decceleration of 5ms-2. If it starts decelerating at 90ms-1, find the distance required to stop.
+A particle moves at a decceleration of 2ms-2. At time 0, the velocity is 15ms-1. Find the velocity when t = 7.
+A particle moves at a decceleration of 10ms-2. At time 0, the velocity is 1.25ms-1. Find the velocity when t = 15.
+A particle moves from rest at a acceleration of 5ms-2. Find the velocity when t = 10.
+A particle moves with acceleration 3ms-2 and moves 38m in 4s. Find the inital velocity.
+A particle moves with acceleration 3ms-2 and moves 38m in 4s. Find the final velocity.
+A particle moves with decceleration 5ms-2 and moves 50 in 7s. Find the inital velocity.
+A particle moves with acceleration 15ms-2 and moves 150m in 13s. Find the final velocity.
+A particle moves with acceleration 2.5ms-2 and passes A at 3ms-1 and point B. If AB = 8m find the velocity at B
+A car travelling at 12ms-1 stops and comes to rest after 36m. Find the decceleration.
+A car travelling at 10ms-1 applies its brakes and stops in 16s. Find the decceleration of the car.
+A car travelling at 50ms-1 applies its brakes and stops in 35s. Find the decceleration of the car.
