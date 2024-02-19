@@ -16,18 +16,17 @@ class Inputs():
         self.input_rect = pygame.Rect(300, 150, 140, 32) 
 
     def checkpressed(self,button):
-
         if button == self.mainmenu:
             return False
 
-def menu():
+def menu(correct,answered):
     pygame.init()
     text = ""
     font = pygame.font.SysFont("Comic Sans MS", 40)
     font2 = pygame.font.SysFont("Comic Sans MS", 20)
     clock = pygame.time.Clock()
     is_running = True
-    #usernames = get_usernames(usernames)
+    usernames = get_usernames(usernames)
     while is_running:
         time_delta = clock.tick(60)/1000.0
         for event in pygame.event.get():
@@ -40,9 +39,12 @@ def menu():
                 if event.key == pygame.K_BACKSPACE: 
                     text = text[:-1] 
                 if event.key == pygame.K_RETURN:
-                    #valid = check_username(text,usernames)
-                    #if valid == True:
-                        pass # show stats
+                    valid = check_username(text,usernames)
+                    if valid:
+                        save_stats(text,answered,correct)
+                    else:
+                        add_newusername(text)
+                        save_stats(text,answered,correct)
                 else: 
                     text+=event.unicode
         manager.update(time_delta)
@@ -64,5 +66,60 @@ def save_progress(ID,QuestionsAnswered,CorrectQuestions): # need to pass values 
 INSERT OR REPLACE INTO Progress(UserID,QuestionsAnswered,CorrectQuestions)
 VALUES(?,?,?);""", [(ID), (QuestionsAnswered), (CorrectQuestions)])
     db.commit()
+
+def check_username(userinput,usernames):
+    if userinput in usernames:
+        return True
+    else:
+        return False
      
+def get_usernames(usernames):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT count(*)
+FROM users;""")
+    result = cursor.fetchall()
+    n = result[0][0]
+    for i in range(n):
+        cursor.execute("""
+SELECT username
+FROM users
+WHERE userID = ?;""", [(i)])
+        usernames.append(re.sub("['',()]", "", str(cursor.fetchone())))
+    return usernames
+
+def save_stats(userinput,answered,correct):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT userID
+FROM users
+WHERE username = ?;""", [(userinput)])
+    id = re.sub("['',()]", "", str(cursor.fetchone()))
+    cursor.execute("""
+SELECT QuestionsAnswered,CorrectQuestions
+FROM Progress
+WHERE userID = ?;""", [(id)])
+    stats = cursor.fetchall()
+    answered+=int(stats[0][0])
+    correct+=int(stats[0][1])
+    cursor.execute("""
+INSERT OR REPLACE INTO Progress(userID,QuestionsAnswered,CorrectQuestions)
+VALUES(?,?,?);""",[(id), (answered), (correct)])
+    db.commit()
+
+def add_newusername(text):
+    with sqlite3.connect("saves/database.db") as db:
+        cursor = db.cursor()
+    cursor.execute("""
+SELECT count(*)
+FROM users;""")
+    result = cursor.fetchall()
+    n = result[0][0]
+    cursor.execute("""
+INSERT INTO users(userID,Username)
+VALUES(?,?);""", [(n+1), (text)])
+    db.commit()
+
 i = Inputs()

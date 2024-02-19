@@ -28,11 +28,11 @@ class Inputs():
         self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Save Progress',manager=manager)
         self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 500), (250, 75)),text='Load Progress',manager=manager)
     
-    def check_button(self,button,is_running):
+    def check_button(self,button,is_running,correct_questions,questions_answered):
         if button == self.quit:
             is_running = False
         if button == self.save:
-            save.menu()
+            save.menu(correct_questions,questions_answered)
         if button == self.load:
             load.menu()
         return is_running

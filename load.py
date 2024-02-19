@@ -43,7 +43,7 @@ def menu():
                     text = text[:-1] 
                 if event.key == pygame.K_RETURN:
                     valid = check_username(text,usernames)
-                    if valid == True:
+                    if valid:
                         answered,correct = get_stats(text)
                 else: 
                     text+=event.unicode
