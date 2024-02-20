@@ -203,10 +203,10 @@ def start():
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
-        window_surface.blit(font.render(f"1 - {a}", True, black, None),(375,250))
-        window_surface.blit(font.render(f"2 - {b}", True, black, None),(375,300))
-        window_surface.blit(font.render(f"3 - {c}", True, black, None),(375,350))
-        window_surface.blit(font.render(f"4 - {d}", True, black, None),(375,400))
+        window_surface.blit(font.render(f"1: {a}", True, black, None),(325,200))
+        window_surface.blit(font.render(f"2: {b}", True, black, None),(325,250))
+        window_surface.blit(font.render(f"3: {c}", True, black, None),(325,300))
+        window_surface.blit(font.render(f"4: {d}", True, black, None),(325,350))
         if correct_selectedbutton == True:
             window_surface.blit(font2.render("Correct", True, black, None),(375,200))
             correct_selectedbutton = None
