@@ -16,7 +16,6 @@ class Inputs():
         self.input_rect = pygame.Rect(300, 150, 140, 32) 
 
     def checkpressed(self,button):
-
         if button == self.mainmenu:
             return False
 
@@ -29,6 +28,7 @@ def menu():
     is_running = True
     answered = None
     correct = None
+    usernames = []
     usernames = get_usernames(usernames)
     while is_running:
         time_delta = clock.tick(60)/1000.0
@@ -50,10 +50,10 @@ def menu():
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))
         manager.draw_ui(window_surface)
-        window_surface.blit(font.render("Load", True, black, None),(350,25))
+        window_surface.blit(font.render("View Stats", True, black, None),(300,25))
         window_surface.blit(font2.render("Enter your username: ", True, black, None),(50,150))
-        window_surface.blit(font2.render(answered, True, black, None),(50,250))
-        window_surface.blit(font2.render(correct, True, black, None),(50,350))
+        window_surface.blit(font2.render(f"Questions Answered: {answered}", True, black, None),(50,250))
+        window_surface.blit(font2.render(f"Correct Questions: {correct}", True, black, None),(50,350))
         text_surface = font2.render(text, True, (255, 255, 255)) 
         i.input_rect.w = max(100, text_surface.get_width()+10) 
         pygame.draw.rect(window_surface, black, i.input_rect) 
@@ -105,8 +105,12 @@ SELECT QuestionsAnswered,CorrectQuestions
 FROM Progress
 WHERE userID = ?;""", [(id)])
     stats = cursor.fetchall()
-    answered = stats[0][0]
-    correct = stats[0][1]
+    try:
+        answered = stats[0][0]
+        correct = stats[0][1]
+    except IndexError:
+        answered = 0
+        correct = 0
     return answered,correct
      
 i = Inputs()

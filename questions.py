@@ -26,7 +26,7 @@ class Inputs():
     def __init__(self):
         self.quit = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((25, 500), (250, 75)),text='Quit',manager=manager)
         self.save = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((275, 500), (250, 75)),text='Save Progress',manager=manager)
-        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 500), (250, 75)),text='Load Progress',manager=manager)
+        self.load = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 500), (250, 75)),text='View Stats',manager=manager)
     
     def check_button(self,button,is_running,correct_questions,questions_answered):
         if button == self.quit:
@@ -196,7 +196,7 @@ def start():
                 is_running = False
             manager.process_events(event)
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
-                is_running = i.check_button(event.ui_element,is_running)
+                is_running = i.check_button(event.ui_element,is_running,correct_questions,questions_answered)
         correct_selectedbutton,correct_questions,questions_answered = i.check_keyboard(correct_button,button_selected,correct_selectedbutton,correct_questions,questions_answered)
         manager.update(time_delta)
         window_surface.blit(background, (0, 0))

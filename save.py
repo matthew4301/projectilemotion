@@ -26,6 +26,7 @@ def menu(correct,answered):
     font2 = pygame.font.SysFont("Comic Sans MS", 20)
     clock = pygame.time.Clock()
     is_running = True
+    usernames = []
     usernames = get_usernames(usernames)
     while is_running:
         time_delta = clock.tick(60)/1000.0
@@ -102,8 +103,11 @@ SELECT QuestionsAnswered,CorrectQuestions
 FROM Progress
 WHERE userID = ?;""", [(id)])
     stats = cursor.fetchall()
-    answered+=int(stats[0][0])
-    correct+=int(stats[0][1])
+    try:
+        answered+=int(stats[0][0])
+        correct+=int(stats[0][1])
+    except IndexError:
+        pass
     cursor.execute("""
 INSERT OR REPLACE INTO Progress(userID,QuestionsAnswered,CorrectQuestions)
 VALUES(?,?,?);""",[(id), (answered), (correct)])
