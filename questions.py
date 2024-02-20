@@ -189,6 +189,7 @@ def start():
     correct_questions = 0
     questions_answered = 0
     question,correct_button,a,b,c,d = find_question()
+    correct_message = ""
     while is_running:
         time_delta = clock.tick(10)/1000.0
         for event in pygame.event.get():
@@ -203,16 +204,17 @@ def start():
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Questions", True, black, None),(300,25))
         window_surface.blit(font2.render(str(question), True, black, None),(10,150))
-        window_surface.blit(font.render(f"1: {a}", True, black, None),(325,200))
-        window_surface.blit(font.render(f"2: {b}", True, black, None),(325,250))
-        window_surface.blit(font.render(f"3: {c}", True, black, None),(325,300))
-        window_surface.blit(font.render(f"4: {d}", True, black, None),(325,350))
+        window_surface.blit(font.render(f"1: {a}", True, black, None),(325,250))
+        window_surface.blit(font.render(f"2: {b}", True, black, None),(325,300))
+        window_surface.blit(font.render(f"3: {c}", True, black, None),(325,350))
+        window_surface.blit(font.render(f"4: {d}", True, black, None),(325,400))
+        window_surface.blit(font2.render(correct_message, True, black, None),(375,200))
         if correct_selectedbutton == True:
-            window_surface.blit(font2.render("Correct", True, black, None),(375,200))
+            correct_message = "Correct!"
             correct_selectedbutton = None
             question,correct_button,a,b,c,d = find_question()
         if correct_selectedbutton == False:
-            window_surface.blit(font2.render("Incorrect", True, black, None),(375,200))
+            correct_message = "Incorrect"
             correct_selectedbutton = None
             question,correct_button,a,b,c,d = find_question()
         pygame.display.update()

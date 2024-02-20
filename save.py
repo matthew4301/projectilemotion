@@ -28,6 +28,7 @@ def menu(correct,answered):
     is_running = True
     usernames = []
     usernames = get_usernames(usernames)
+    saved = ""
     while is_running:
         time_delta = clock.tick(60)/1000.0
         for event in pygame.event.get():
@@ -43,6 +44,7 @@ def menu(correct,answered):
                     valid = check_username(text,usernames)
                     if valid:
                         save_stats(text,answered,correct)
+                        saved = "Saved!"
                     else:
                         add_newusername(text)
                         save_stats(text,answered,correct)
@@ -53,6 +55,7 @@ def menu(correct,answered):
         manager.draw_ui(window_surface)
         window_surface.blit(font.render("Save", True, black, None),(350,25))
         window_surface.blit(font2.render("Enter your username: ", True, black, None),(50,150))
+        window_surface.blit(font2.render(saved, True, black, None),(50,200))
         text_surface = font2.render(text, True, (255, 255, 255)) 
         i.input_rect.w = max(100, text_surface.get_width()+10) 
         pygame.draw.rect(window_surface, black, i.input_rect) 
