@@ -34,7 +34,7 @@ class Buttons():
     def checkpressed(self,button):
         if button == self.questions:
             questions.start()
-        if button == self.sandbox:
+        if button == self.sandbox:  
             projectile_simulator.mainloop()
         if button == self.settings:
             settings.menu()

@@ -6,6 +6,7 @@ import random
 import re
 import save
 import load
+import time
 
 pygame.init()
 pygame.freetype.init()
@@ -212,10 +213,12 @@ def start():
         if correct_selectedbutton == True:
             correct_message = "Correct!"
             correct_selectedbutton = None
+            time.sleep(1)
             question,correct_button,a,b,c,d = find_question()
         if correct_selectedbutton == False:
             correct_message = "Incorrect"
             correct_selectedbutton = None
+            time.sleep(1)
             question,correct_button,a,b,c,d = find_question()
         pygame.display.update()
 
